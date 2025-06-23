@@ -99,7 +99,7 @@ def plot_results(mean_data: dict, all_identities: dict, plot_type: str = 'bar'):
             stds = [mean_data[protein][method]['std'] for protein in proteins]
             plt.bar(x + i * width, means, yerr=stds, width=width, label=method, capsize=5)
         plt.xticks(x + width * (num_methods - 1) / 2, proteins)
-        plt.ylabel('Mean Identity to Wildtype')
+        plt.ylabel('Average Sequence Identity to Wildtype')
         # plt.title('Comparison of Models Across Proteins')
         plt.legend()
         plt.tight_layout()
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     file_structure = dict()
     abs_base = '/Users/kilianmandon/Projects/ProteinMPNN-decoded'
     consider_residues = dict()
-    for prot_name, prot in zip(['PVX', 'TMV', 'PepMV', 'BMV'], ['pvx', 'tmv', 'PepMV', 'bmv']):
+    for prot_name, prot in zip(['PVX', 'TMV', 'PepMV', 'BaMV'], ['pvx', 'tmv', 'PepMV', 'bmv']):
         file_structure[prot_name] = {
             'P-MPNN Monomer': f'{abs_base}/data/helical_tests/out_base/{prot}_1x1.fa',
             'P-MPNN 2x2': f'{abs_base}/data/helical_tests/out_base/{prot}_2x2.fa',
