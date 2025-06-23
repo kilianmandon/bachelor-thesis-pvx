@@ -1,0 +1,129 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{lightalgostyle}[2024/07/25 Light themed algorithm style]
+
+\RequirePackage{amsfonts,amsmath,amssymb,amsthm}
+\RequirePackage{algorithm}
+\RequirePackage{algpseudocode}
+\RequirePackage{xcolor}
+\RequirePackage{mathtools}
+\RequirePackage{bm}
+\RequirePackage{xpatch}
+\RequirePackage{pagecolor}
+\RequirePackage{tikz}
+
+% Define custom colors
+\definecolor{bgColor}{HTML}{FFFFFF} % Dark Gray
+\definecolor{textColor}{HTML}{000000} % White
+% \definecolor{textColor}{HTML}{ababab}
+\definecolor{keywordColor}{HTML}{008000} % Green
+\definecolor{keywordColorInternal}{HTML}{000000} % Green
+\definecolor{commentColor}{HTML}{800000} % Red
+\definecolor{customFunctionColor}{HTML}{010080} % Blue
+\definecolor{highlightColor}{HTML}{FFF100} % Yellow
+\definecolor{afRed}{HTML}{f05024} % Red
+
+% Set page color and text color for the entire document
+\pagecolor{bgColor}
+\color{textColor}
+
+\algrenewcommand\alglinenumber[1]{{\sffamily\footnotesize#1}}
+
+\makeatletter
+% Adjust vertical spacing for the entire algorithm
+\xpatchcmd{\algorithmic}{\itemsep\z@}{\itemsep=1.2ex plus2pt}{}{}
+
+% Adjust spacing before the first line
+\xpatchcmd{\algorithmic}
+  {\begin{list}}
+  {\vspace{1.5ex}\begin{list}}
+  {}{}
+
+% Adjust spacing after the last line
+\xpatchcmd{\endalgorithmic}
+  {\end{list}}
+  {\end{list}\vspace{1.5ex}}
+  {}{}
+\makeatother
+
+\newcommand{\LineComment}[1]{\hfill#1}
+
+% Custom command for function definition
+%\newcommand{\AlgFunctionDef}[2]{%
+%    \item[\textcolor{keywordColor}{\textbf{def}} #1(#2):]\mbox{}%
+%\setcounter{ALG@line}{0}% Reset line counter
+%}
+
+%\algnewcommand{\AlgFunctionDef}[2]{%
+%    \item[\textcolor{keywordColor}{\textbf{def}}] #1(#2):%
+%}
+\newlength{\funcnamewidth}
+\newcommand{\AlgFunctionDef}[2]{%
+  \settowidth{\funcnamewidth}{\textcolor{keywordColor}{\textbf{def}} #1(}%
+  \item[\textcolor{keywordColor}{\textbf{def}}]%
+  \textcolor{black}{#1(}%
+  \hspace*{-\funcnamewidth}%
+  \hspace*{0pt}%
+  \makebox[0pt][l]{%
+    \hspace*{\funcnamewidth}%
+    \parbox[t]{\dimexpr\linewidth - \funcnamewidth - 4em}{\normalsize\raggedright #2):}%
+  }%
+}
+
+\algnewcommand{\CustomFunction}[1]{\textcolor{customFunctionColor}{#1}}
+
+\algrenewcommand\alglinenumber[1]{\makebox[1.5em][r]{\color{textColor!60}#1:}\hspace{0.5em}}
+%\algrenewcommand\alglinenumber[1]{\colorbox{gray!20}{\makebox[\dimexpr1.5em-2\fboxsep\relax][l]{\color{textColor!60}#1:}}}
+
+\newdimen{\algindent}
+\setlength\algindent{1.5em} 
+%\algnewcommand{\AlgComment}[2][0]{%
+%    \item[{\colorbox{gray!20}{\makebox[\dimexpr1.5em-2\fboxsep\relax][l]{\textcolor{commentColor}{\#}}}\hspace{#1\algindent+0.5em}\textcolor{commentColor}{#2}}]%
+%}
+\algnewcommand{\AlgComment}[2][0]{%
+    \item[{\makebox[1.5em][r]{\textcolor{commentColor}{\#}}\hspace{#1\algindent+0.5em+0.5em}\textcolor{commentColor}{#2}}]%
+}
+
+\newcommand{\yellowstar}{%
+  \tikz[baseline=-0.5ex]{
+    \node[minimum width=1.1em, minimum height=1.1em, 
+          inner sep=0pt, outer sep=0pt,
+          circle, fill=yellow, draw=none] 
+    {\textcolor{black}{\normalsize$\star$}};
+  }%
+}
+\algnewcommand{\AlgCustomLine}[2][0]{%
+    \item[{\makebox[1.5em][r]{\yellowstar:}\hspace{#1\algindent+0.5em+0.5em}#2}]%
+}
+
+\algnewcommand{\AlgCommentInline}[1]{%
+\hspace{2em}\textcolor{commentColor}{\# #1}
+}
+
+\newcommand{\algHighlight}[1]{\colorbox{highlightColor}{\textcolor{black}{#1}}}
+
+%\newcommand{\AlgComment}[1]{%
+%  \item[\hspace{1em}\textcolor{commentColor}{\#}]\StateX\textcolor{commentColor}{#1}%
+%  %\State\hspace{-\algorithmicindent}\alglinenumber{\#}
+%}
+%\newcommand{\AlgComment}[1]{%
+%    \State \textcolor{commentColor}{\#}\textcolor{commentColor}{#1}%
+%}
+%\newcommand{\AlgComment}[1]{%
+%    \Statex \textcolor{commentColor}{\#}\hspace{\algorithmicindent}\textcolor{commentColor}{#1}%
+%}
+%\algnewcommand{\AlgComment}[1]{\State\textcolor{commentColor}{\#}\hspace{\algorithmicindent}\textcolor{commentColor}{#1}}
+
+% Redefine algorithmic environment to use new colors
+\algrenewcommand{\algorithmicrequire}{\textbf{Input:}}
+\algrenewcommand{\algorithmicensure}{\textbf{Output:}}
+\algrenewcommand{\algorithmiccomment}[1]{\hfill\{#1\}}
+\algrenewcommand{\algorithmicend}{\textcolor{keywordColorInternal}{\textbf{end}}}
+\algrenewcommand{\algorithmicif}{\textcolor{keywordColorInternal}{\textbf{if}}}
+\algrenewcommand{\algorithmicthen}{\textcolor{keywordColorInternal}{\textbf{then}}}
+\algrenewcommand{\algorithmicelse}{\textcolor{keywordColorInternal}{\textbf{else}}}
+\algrenewcommand{\algorithmicfor}{\textcolor{keywordColorInternal}{\textbf{for}}}
+\algrenewcommand{\algorithmicforall}{\textcolor{keywordColorInternal}{\textbf{for all}}}
+\algrenewcommand{\algorithmicdo}{\textcolor{keywordColorInternal}{\textbf{do}}}
+\algrenewcommand{\algorithmicwhile}{\textcolor{keywordColorInternal}{\textbf{while}}}
+\algrenewcommand{\algorithmicrepeat}{\textcolor{keywordColorInternal}{\textbf{repeat}}}
+\algrenewcommand{\algorithmicuntil}{\textcolor{keywordColorInternal}{\textbf{until}}}

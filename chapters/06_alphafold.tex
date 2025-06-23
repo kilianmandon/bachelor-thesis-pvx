@@ -1,0 +1,63 @@
+\begin{algorithm}
+    \caption{Sample Diffusion}
+    {\small
+    \begin{algorithmic}[1]
+        \AlgFunctionDef{SampleDiffusion}{$\{\mathbf{f}^*\}$, $\{\mathbf{s}_i^{\text{inputs}}\}$, $\{\mathbf{s}_i^{\text{trunk}}\}$, $\{\mathbf{z}_{ij}^{\text{trunk}}\}$, Noise Schedule $[c_0, c_1, \ldots, c_T]$, $\gamma_0 = 0.8$, $\gamma_{\min} = 1.0$, noise scale $\lambda = 1.003$, step scale $\eta = 1.5$}
+        \State $\vec{\mathbf{x}}_l \sim c_0 \cdot \mathcal{N}(\vec{\mathbf{0}}, \mathbf{I}_3)$ \hfill $\vec{\mathbf{x}}_l \in \mathbb{R}^3$
+        \ForAll{$c_\tau \in [c_1, \ldots, c_T]$}
+            \State $\{\vec{\mathbf{x}}_l\} \gets \CustomFunction{\text{CentreRandomAugmentation}}(\{\vec{\mathbf{x}}_l\})$
+            \State $\gamma \gets \gamma_0 \text{ if } c_\tau > \gamma_{\min} \text{ else } 0$
+            \State $\hat{t} \gets c_{\tau-1}(\gamma + 1)$
+            \State $\vec{\boldsymbol{\xi}}_l \gets \lambda \sqrt{\hat{t}^2 - c_{\tau-1}^2} \cdot \mathcal{N}(\vec{\mathbf{0}}, \mathbf{I}_3)$ \hfill $\vec{\boldsymbol{\xi}}_l \in \mathbb{R}^3$
+            \State $\vec{\mathbf{x}}_l^{\text{noisy}} \gets \vec{\mathbf{x}}_l + \vec{\boldsymbol{\xi}}_l$
+            \State $\{\vec{\mathbf{x}}_l^{\text{denoised}}\} \gets \CustomFunction{\text{DiffusionModule}}(\{\vec{\mathbf{x}}_l^{\text{noisy}}\}, \hat{t}, \{\mathbf{f}^*\}, \{\mathbf{s}_i^{\text{inputs}}\}, \{\mathbf{s}_i^{\text{trunk}}\}, \{\mathbf{z}_{ij}^{\text{trunk}}\})$
+            \State $\vec{\boldsymbol{\delta}}_l \gets (\vec{\mathbf{x}}_l - \vec{\mathbf{x}}_l^{\text{denoised}})/\hat{t}$
+            \State $dt \gets c_\tau - \hat{t}$
+            \State $\vec{\mathbf{x}}_l \gets \vec{\mathbf{x}}_l^{\text{noisy}} + \eta \cdot dt \cdot \vec{\boldsymbol{\delta}}_l$
+        \EndFor
+        \State \textbf{return} $\{\vec{\mathbf{x}}_l\}$
+        \end{algorithmic}
+    }
+\end{algorithm}
+
+
+\begin{algorithm}
+    \caption{Sample Diffusion\algHighlight{ with Symmetrization for Multimeric Complexes}}
+    {\small
+    \begin{algorithmic}[1]
+        \AlgFunctionDef{SampleDiffusion}{$\{\mathbf{f}^*\}$, $\{\mathbf{s}_i^{\text{inputs}}\}$, $\{\mathbf{s}_i^{\text{trunk}}\}$, $\{\mathbf{z}_{ij}^{\text{trunk}}\}$, Noise Schedule $[c_0, c_1, \ldots, c_T]$, $\gamma_0 = 0.8$, $\gamma_{\min} = 1.0$, noise scale $\lambda = 1.003$, step scale $\eta = 1.5$, \algHighlight{Monomer Transforms $\{T_j\}$, Monomer Indices $\{I_j\}$}}
+        \State $\vec{\mathbf{x}}_l \sim c_0 \cdot \mathcal{N}(\vec{\mathbf{0}}, \mathbf{I}_3)$ \hfill $\vec{\mathbf{x}}_l \in \mathbb{R}^3$
+        \AlgComment{Modification: Initial Symmetrization}
+        \AlgCustomLine{$(R_{\text{ref}}, \vec{\mathbf{t}}_{\text{ref}}) \gets (\mathbf{I}, \text{mean}(\{\vec{\mathbf{x}}_l\}_{l \in I_1}))$} \hfill Denoted as $T_{\text{ref}}=(R_{\text{ref}}, \vec{\mathbf{t}}_{\text{ref}})$
+        \AlgCustomLine{\textbf{for all} $j \in [2, \ldots, N_{\text{monomer}}]$}
+            \AlgCustomLine[1]{ $\{\vec{\mathbf{x}}_l\}_{l \in I_j} \gets T_{\text{ref}} \circ T_j \circ T_{\text{ref}}^{-1} \circ \{\vec{\mathbf{x}}_l\}_{l \in I_1}$}
+        \AlgCustomLine{\textbf{end for}}
+        
+        \ForAll{$c_\tau \in [c_1, \ldots, c_T]$}
+            \AlgComment[1]{Track Origin of Symmetrization Center}
+            \AlgCustomLine[1]{$\vec{\mathbf{t}}_{\text{ref}} \gets \text{mean}(\{\vec{\mathbf{x}}_l\}_{l \in I_1})$}
+            \State $\{\vec{\mathbf{x}}_l\}$\algHighlight{, $T_{\text{aug}}$}$ \gets \CustomFunction{\text{CentreRandomAugmentation}}(\{\vec{\mathbf{x}}_l\})$
+            \AlgComment[1]{Track Movement by CentreRandomAugmentation}
+            \AlgCustomLine[1]{$T_{\text{ref}} \gets T_{\text{aug}} \circ T_{\text{ref}}$}
+            
+            \State $\gamma \gets \gamma_0 \text{ if } c_\tau > \gamma_{\min} \text{ else } 0$
+            \State $\hat{t} \gets c_{\tau-1}(\gamma + 1)$
+            \State $\vec{\boldsymbol{\xi}}_l \gets \lambda \sqrt{\hat{t}^2 - c_{\tau-1}^2} \cdot \mathcal{N}(\vec{\mathbf{0}}, \mathbf{I}_3)$ \hfill $\vec{\boldsymbol{\xi}}_l \in \mathbb{R}^3$
+            \State $\vec{\mathbf{x}}_l^{\text{noisy}} \gets \vec{\mathbf{x}}_l + \vec{\boldsymbol{\xi}}_l$
+            
+            \State $\{\vec{\mathbf{x}}_l^{\text{denoised}}\} \gets \CustomFunction{\text{DiffusionModule}}(\{\vec{\mathbf{x}}_l^{\text{noisy}}\}, \hat{t}, \{\mathbf{f}^*\}, \{\mathbf{s}_i^{\text{inputs}}\}, \{\mathbf{s}_i^{\text{trunk}}\}, \{\mathbf{z}_{ij}^{\text{trunk}}\})$
+            
+            \AlgComment[1]{Recenter and Symmetrize Denoised Prediction}
+            \AlgCustomLine[1]{$\vec{\mathbf{x}}_l^{\text{denoised}} \mathrel{+}= \text{mean}(\{\vec{\mathbf{x}}_l^{\text{noisy}}\}_{l \in I_1}) - \text{mean}(\{\vec{\mathbf{x}}_l^{\text{denoised}}\}_{l \in I_1})$}
+            \AlgCustomLine[1]{\textbf{for all} $j \in [2, \ldots, N_{\text{monomer}}]$}
+                \AlgCustomLine[2]{$\{\vec{\mathbf{x}}_l^{\text{denoised}}\}_{l \in I_j} \gets T_{\text{ref}} \circ T_j \circ T_{\text{ref}}^{-1} \circ \{\vec{\mathbf{x}}_l^{\text{denoised}}\}_{l \in I_1}$}
+            \AlgCustomLine[1]{\textbf{end for}}
+        
+            \State $\vec{\boldsymbol{\delta}}_l \gets (\vec{\mathbf{x}}_l - \vec{\mathbf{x}}_l^{\text{denoised}})/\hat{t}$
+            \State $dt \gets c_\tau - \hat{t}$
+            \State $\vec{\mathbf{x}}_l \gets \vec{\mathbf{x}}_l^{\text{noisy}} + \eta \cdot dt \cdot \vec{\boldsymbol{\delta}}_l$
+        \EndFor
+        \State \textbf{return} $\{\vec{\mathbf{x}}_l\}$
+        \end{algorithmic}
+    }
+    \end{algorithm}

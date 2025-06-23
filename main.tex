@@ -1,0 +1,121 @@
+\documentclass[12pt]{article}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage[a4paper, lmargin={4cm}, rmargin={2cm}, tmargin={2.5cm}, bmargin={2.5cm}]{geometry}
+\usepackage{enumerate}
+\usepackage{amssymb}
+\usepackage{svg}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{faktor}
+\usepackage{dsfont}
+\usepackage{bm}
+\usepackage{nicefrac}
+\usepackage{siunitx}
+\usepackage{tabularray}
+\usepackage{caption}
+
+\usepackage{lightalgostyle}
+
+\captionsetup{labelfont=bf,tableposition=top}
+
+\graphicspath{ {images/} }
+
+\usepackage{csquotes}
+\usepackage{biblatex}
+\addbibresource{chapters/bachelor_sources.bib}
+
+\newtheorem{theorem}{Satz}[section]
+\newtheorem{corollary}{Korollar}[theorem]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{example}[theorem]{Beispiel}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Bemerkung}
+
+\DeclareSIUnit\angstrom{\text {Å}}
+
+\DeclareMathOperator{\ip}{ip}
+\DeclareMathOperator{\cpl}{Cpl}
+\newcommand{\cplc}{\cpl_{\operatorname{c}}}
+\newcommand{\cplbc}{\cpl_{\operatorname{bc}}}
+\DeclareMathOperator{\uf}{uf}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\CFP}{CFP}
+\DeclareMathOperator{\FP}{FP}
+\DeclareMathOperator{\AF}{AF}
+\DeclareMathOperator{\depth}{depth}
+\DeclareMathOperator{\pj}{pj}
+\DeclareMathOperator{\pp}{pp}
+\DeclareMathOperator{\ST}{ST}
+\DeclareMathOperator{\clip}{clip}
+\begin{document}
+%\begin{titlepage}
+%\title{
+    %{Adaptierte Wasserstein Metrik} \\
+    %{Westfälische Wilhelms-Universität}
+%}
+
+%\author{Kilian Mandon}
+%\date{\today}
+
+%\end{titlepage}
+
+\begin{titlepage}
+    \begin{figure}[t]
+        \includesvg[width=0.3\textwidth]{images/RWTH_Logo_3.svg}
+    \end{figure}
+   \begin{center}
+        \vspace*{1cm}
+       \textbf{\huge Computational Design and Cell-Free Expression of Coat Protein Subunits for the Functional Assembly into Potato Virus X-like Particles}
+       \paragraph{}$~~$\\
+       \paragraph{}$~~$\\
+       \paragraph{}$~~$\\
+       \textbf{Thesis} \\ 
+       \textbf{in Molecular and Applied Biotechnology (B. Sc.)} \\ 
+       \textbf{at RWTH Aachen University}
+       \paragraph{}$~~$\\
+       \paragraph{}$~~$\\
+       \paragraph{}$~~$\\
+       \text{Submitted on: \today} \\
+       \text{by: Kilian Mandon} \\
+       \text{1. Appraiser: Prof. Dr. Stefan Schillberg} \\
+       \text{2. Appraiser: Jun. Prof. Dr. Anna Matuszyńska} \\
+       \paragraph{}$~~$\\
+       \text{RWTH Aachen University}
+            
+   \end{center}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+\section{Introduction}\label{ch:introduction}
+\input{chapters/01_introduction}
+
+\section{Notation}\label{ch:notation}
+\input{chapters/02_notation}
+
+\section{Symmetry Analysis and Model Building}\label{ch:symmetry}
+\input{chapters/03_symmetry}
+
+\section{Sequence Design with Protein-MPNN}\label{ch:pmpnn}
+\input{chapters/04_pmpnn}
+
+\section{Backbone Design with RFdiffusion}\label{ch:rfdiffusion}
+\input{chapters/05_rfdiffusion}
+
+\section{Evaluation with AlphaFold}\label{ch:alphafold}
+\input{chapters/06_alphafold}
+
+\section{Evaluation with GROMACS}\label{ch:gromacs}
+\input{chapters/07_gromacs}
+
+\clearpage
+\printbibliography
+
+\end{document}
