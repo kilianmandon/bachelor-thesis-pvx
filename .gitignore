@@ -9,3 +9,7 @@ __pycache__/
 .DS_Store
 
 svg-inkscape
+chimeraX/rfdiffusion_trajectories
+chimeraX/af3_trajectories
+chimeraX/rfdiffusion_trajectories.cxs
+chimeraX/af3_trajectories.cxs

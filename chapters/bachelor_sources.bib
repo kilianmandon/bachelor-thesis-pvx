@@ -67,3 +67,62 @@ doi = {10.1126/science.add2187},
 URL = {https://www.science.org/doi/abs/10.1126/science.add2187},
 eprint = {https://www.science.org/doi/pdf/10.1126/science.add2187},
 abstract = {Although deep learning has revolutionized protein structure prediction, almost all experimentally characterized de novo protein designs have been generated using physically based approaches such as Rosetta. Here, we describe a deep learning–based protein sequence design method, ProteinMPNN, that has outstanding performance in both in silico and experimental tests. On native protein backbones, ProteinMPNN has a sequence recovery of 52.4\% compared with 32.9\% for Rosetta. The amino acid sequence at different positions can be coupled between single or multiple chains, enabling application to a wide range of current protein design challenges. We demonstrate the broad utility and high accuracy of ProteinMPNN using x-ray crystallography, cryo–electron microscopy, and functional studies by rescuing previously failed designs, which were made using Rosetta or AlphaFold, of protein monomers, cyclic homo-oligomers, tetrahedral nanoparticles, and target-binding proteins. Deep learning approaches such as Alphafold and Rosettafold have made reliable protein structure prediction broadly accessible. For the inverse problem, finding a sequence that folds to a desired structure, most approaches remain based on energy optimization. In two papers, a range of protein design problems were addressed through deep learning methods. Dauparas et al. built on recent deep learning protein design approaches to develop a method called ProteinMPNN. They validated designs experimentally and showed that ProteinMPNN can rescue previously failed designs made using Rosetta or Alphafold. Wicky et al. started from a random sequence and used Monte Carlo sequence search coupled with structure prediction by Alphafold to design cyclic homo-oligomers. Although the designs were generated to achieve stable expression, the sequences had to be regenerated using ProteinMPNN. This approach allowed for the design of a range of experimentally validated cyclic oligomers and paves the way for the design of increasingly complex assemblies. —VV A network-based protein design enables the generation of cyclic homo-oligomers across the nanoscopic scale.}}
+
+
+@article{RFdiffusion,
+	abstract = {There has been considerable recent progress in designing new proteins using deep-learning methods1--9. Despite this progress, a general deep-learning framework for protein design that enables solution of a wide range of design challenges, including de novo binder design and design of higher-order symmetric architectures, has yet to be described. Diffusion models10,11 have had considerable success in image and language generative modelling but limited success when applied to protein modelling, probably due to the complexity of protein backbone geometry and sequence--structure relationships. Here we show that by fine-tuning the RoseTTAFold structure prediction network on protein structure denoising tasks, we obtain a generative model of protein backbones that achieves outstanding performance on unconditional and topology-constrained protein monomer design, protein binder design, symmetric oligomer design, enzyme active site scaffolding and symmetric motif scaffolding for therapeutic and metal-binding protein design. We demonstrate the power and generality of the method, called RoseTTAFold diffusion (RFdiffusion), by experimentally characterizing the structures and functions of hundreds of designed symmetric assemblies, metal-binding proteins and protein binders. The accuracy of RFdiffusion is confirmed by the cryogenic electron microscopy structure of a designed binder in complex with influenza haemagglutinin that is nearly identical to the design model. In a manner analogous to networks that produce images from user-specified inputs, RFdiffusion enables the design of diverse functional proteins from simple molecular specifications.},
+	author = {Watson, Joseph L. and Juergens, David and Bennett, Nathaniel R. and Trippe, Brian L. and Yim, Jason and Eisenach, Helen E. and Ahern, Woody and Borst, Andrew J. and Ragotte, Robert J. and Milles, Lukas F. and Wicky, Basile I. M. and Hanikel, Nikita and Pellock, Samuel J. and Courbet, Alexis and Sheffler, William and Wang, Jue and Venkatesh, Preetham and Sappington, Isaac and Torres, Susana V{\'a}zquez and Lauko, Anna and De Bortoli, Valentin and Mathieu, Emile and Ovchinnikov, Sergey and Barzilay, Regina and Jaakkola, Tommi S. and DiMaio, Frank and Baek, Minkyung and Baker, David},
+	date = {2023/08/01},
+	date-added = {2025-06-27 21:11:32 +0200},
+	date-modified = {2025-06-27 21:11:32 +0200},
+	doi = {10.1038/s41586-023-06415-8},
+	id = {Watson2023},
+	isbn = {1476-4687},
+	journal = {Nature},
+	number = {7976},
+	pages = {1089--1100},
+	title = {De novo design of protein structure and function with RFdiffusion},
+	url = {https://doi.org/10.1038/s41586-023-06415-8},
+	volume = {620},
+	year = {2023},
+	bdsk-url-1 = {https://doi.org/10.1038/s41586-023-06415-8}}
+
+
+
+@article{binder_design,
+	abstract = {Recently it has become possible to de novo design high affinity protein binding proteins from target structural information alone. There is, however, considerable room for improvement as the overall design success rate is low. Here, we explore the augmentation of energy-based protein binder design using deep learning. We find that using AlphaFold2 or RoseTTAFold to assess the probability that a designed sequence adopts the designed monomer structure, and the probability that this structure binds the target as designed, increases design success rates nearly 10-fold. We find further that sequence design using ProteinMPNN rather than Rosetta considerably increases computational efficiency.},
+	author = {Bennett, Nathaniel R. and Coventry, Brian and Goreshnik, Inna and Huang, Buwei and Allen, Aza and Vafeados, Dionne and Peng, Ying Po and Dauparas, Justas and Baek, Minkyung and Stewart, Lance and DiMaio, Frank and De Munck, Steven and Savvides, Savvas N. and Baker, David},
+	date = {2023/05/06},
+	date-added = {2025-06-27 21:18:33 +0200},
+	date-modified = {2025-06-27 21:18:33 +0200},
+	doi = {10.1038/s41467-023-38328-5},
+	id = {Bennett2023},
+	isbn = {2041-1723},
+	journal = {Nature Communications},
+	number = {1},
+	pages = {2625},
+	title = {Improving de novo protein binder design with deep learning},
+	url = {https://doi.org/10.1038/s41467-023-38328-5},
+	volume = {14},
+	year = {2023},
+	bdsk-url-1 = {https://doi.org/10.1038/s41467-023-38328-5}}
+
+
+@article{af3,
+	abstract = {The introduction of AlphaFold 21 has spurred a revolution in modelling the structure of proteins and their interactions, enabling a huge range of applications in protein modelling and design2--6. Here we describe our AlphaFold 3 model with a substantially updated diffusion-based architecture that is capable of predicting the joint structure of complexes including proteins, nucleic acids, small molecules, ions and modified residues. The new AlphaFold model demonstrates substantially improved accuracy over many previous specialized tools: far greater accuracy for protein--ligand interactions compared with state-of-the-art docking tools, much higher accuracy for protein--nucleic acid interactions compared with nucleic-acid-specific predictors and substantially higher antibody--antigen prediction accuracy compared with AlphaFold-Multimer v.2.37,8. Together, these results show that high-accuracy modelling across biomolecular space is possible within a single unified deep-learning framework.},
+	author = {Abramson, Josh and Adler, Jonas and Dunger, Jack and Evans, Richard and Green, Tim and Pritzel, Alexander and Ronneberger, Olaf and Willmore, Lindsay and Ballard, Andrew J. and Bambrick, Joshua and Bodenstein, Sebastian W. and Evans, David A. and Hung, Chia-Chun and O'Neill, Michael and Reiman, David and Tunyasuvunakool, Kathryn and Wu, Zachary and {\v Z}emgulyt{\.e}, Akvil{\.e} and Arvaniti, Eirini and Beattie, Charles and Bertolli, Ottavia and Bridgland, Alex and Cherepanov, Alexey and Congreve, Miles and Cowen-Rivers, Alexander I. and Cowie, Andrew and Figurnov, Michael and Fuchs, Fabian B. and Gladman, Hannah and Jain, Rishub and Khan, Yousuf A. and Low, Caroline M. R. and Perlin, Kuba and Potapenko, Anna and Savy, Pascal and Singh, Sukhdeep and Stecula, Adrian and Thillaisundaram, Ashok and Tong, Catherine and Yakneen, Sergei and Zhong, Ellen D. and Zielinski, Michal and {\v Z}{\'\i}dek, Augustin and Bapst, Victor and Kohli, Pushmeet and Jaderberg, Max and Hassabis, Demis and Jumper, John M.},
+	date = {2024/06/01},
+	date-added = {2025-06-27 21:45:05 +0200},
+	date-modified = {2025-06-27 21:45:05 +0200},
+	doi = {10.1038/s41586-024-07487-w},
+	id = {Abramson2024},
+	isbn = {1476-4687},
+	journal = {Nature},
+	number = {8016},
+	pages = {493--500},
+	title = {Accurate structure prediction of biomolecular interactions with AlphaFold 3},
+	url = {https://doi.org/10.1038/s41586-024-07487-w},
+	volume = {630},
+	year = {2024},
+	bdsk-url-1 = {https://doi.org/10.1038/s41586-024-07487-w}}
+

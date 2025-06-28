@@ -1,0 +1,2 @@
+{"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QIn light of this, methods for in silico\\E$"}
+{"rule":"MORFOLOGIK_RULE_EN_US","sentence":"^\\QSince AlphaFold 3 is indeterministic, repeated runs However, the architecture for structure prediction in AlphaFold 3 is largely different from AlphaFold 2, replacing the structure module with a diffusion algorithm.\\E$"}

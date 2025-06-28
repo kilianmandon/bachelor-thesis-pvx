@@ -1,0 +1,93 @@
+# Model #52 – Use view1
+hide #*; hide #* c
+show #52 c
+coordset #52 51
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/aligned-timestep1-cartoon.png supersample 3
+
+hide #*; hide #* c
+show #52
+coordset #52 51
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/aligned-timestep1-atoms.png supersample 3
+
+
+hide #*; hide #* c
+show #52
+coordset #52 47
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/aligned-timestep5.png supersample 3
+
+hide #*; hide #* c
+show #52
+coordset #52 32
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/aligned-timestep20.png supersample 3
+
+hide #*; hide #* c
+show #52
+coordset #52 12
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/aligned-timestep40.png supersample 3
+
+hide #*; hide #* c
+show #52
+coordset #52 1
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/aligned-timestep50.png supersample 3
+
+# Model #53 – Use view2
+hide #*; hide #* c
+show #53 c
+coordset #53 51
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/scaled-timestep1-cartoon.png supersample 3
+
+hide #*; hide #* c
+show #53
+coordset #53 51
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/scaled-timestep1-atoms.png supersample 3
+
+hide #*; hide #* c
+show #53
+coordset #53 47
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/scaled-timestep5.png supersample 3
+
+hide #*; hide #* c
+show #53
+coordset #53 32
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/scaled-timestep20.png supersample 3
+
+hide #*; hide #* c
+show #53
+coordset #53 12
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/scaled-timestep40.png supersample 3
+
+hide #*; hide #* c
+show #53
+coordset #53 1
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/scaled-timestep50.png supersample 3
+
+# Model #54 – Use view2
+hide #*; hide #* c
+show #54 c
+coordset #54 51
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/basic-timestep1-cartoon.png supersample 3
+
+hide #*; hide #* c
+show #54
+coordset #54 51
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/basic-timestep1-atoms.png supersample 3
+
+hide #*; hide #* c
+show #54
+coordset #54 47
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/basic-timestep5.png supersample 3
+
+hide #*; hide #* c
+show #54
+coordset #54 32
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/basic-timestep20.png supersample 3
+
+hide #*; hide #* c
+show #54
+coordset #54 12
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/basic-timestep40.png supersample 3
+
+hide #*; hide #* c
+show #54
+coordset #54 1
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories/basic-timestep50.png supersample 3

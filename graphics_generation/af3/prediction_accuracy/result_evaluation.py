@@ -37,7 +37,7 @@ def plot_cdf(datasets, method='kde', bins=30, ax=None, labels=None):
 
     for data, label in zip(datasets, labels):
         if method == 'kde':
-            kde = gaussian_kde(data)
+            kde = gaussian_kde(data, bw_method=0.1)
             x_vals = np.linspace(min(data), max(data), 1000)
             pdf = kde(x_vals)
             cdf = np.cumsum(pdf)
@@ -122,8 +122,8 @@ def data_gen():
         all_scores = np.stack(all_scores, axis=0)
         np.save(f'{name}_scores.npy', all_scores)
 
-def main():
-    names = ['base', 'sym', 'sym_track', 'no_msa', 'no_msa_sym', 'no_msa_sym_track']
+def do_plot(file_name, multimer=True):
+    names = ['base', 'sym', 'sym_track', 'no_msa', 'no_msa_sym', 'no_msa_sym_track', 'af2_msa_init_guess']
     labels = [
         r'$+\text{MSA}$',
         r'$+\text{MSA} + \text{Sym}$',
@@ -131,10 +131,11 @@ def main():
         r'$-\text{MSA}$',
         r'$-\text{MSA} + \text{Sym}$',
         r'$-\text{MSA} + \text{Sym+Ori}$',
+        r'AlphaFold 2'
     ]
 
 
-    test_files = list(Path('af3/prediction_accuracy/trimer_configurations').glob('*.cif'))
+    test_files = list(Path('graphics_generation/af3/prediction_accuracy/trimer_configurations').glob('*.cif'))
     test_file_names = [tf.stem for tf in test_files]
 
     all_data = []
@@ -142,7 +143,10 @@ def main():
 
     for name in names:
         print(f'{name}:')
-        data = np.load(f'af3/prediction_accuracy/{name}_scores.npy')
+        if multimer:
+            data = np.load(f'graphics_generation/af3/prediction_accuracy/multimer_scores/{name}_scores.npy')
+        else:
+            data = np.load(f'graphics_generation/af3/prediction_accuracy/monomer_scores/{name}_monomer_scores.npy')
         choice = np.argmin(data, axis=-1)
         best = np.min(data, axis=-1)
         correct = best.reshape(-1, 1) < np.array([10, 8, 6, 5])
@@ -150,9 +154,13 @@ def main():
         # ax = plot_cdf(best, label=name, method='hist')
         print(np.mean(correct, axis=0))
 
-    plot_cdf(all_data, labels=all_labels)
-    plt.savefig(f'images/af3_rmsd_cdf.svg') 
+    plot_cdf(all_data, labels=all_labels, method='kde')
+    # plt.savefig(f'images/modeling/{file_name}.svg') 
     plt.show()
+
+def main():
+    do_plot('af3_rmsd_cdf', multimer=True)
+    # do_plot('af3_rmsd_monomer', multimer=False)
 
 
 

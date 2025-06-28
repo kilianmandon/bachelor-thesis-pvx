@@ -38,10 +38,10 @@ for ax, img_file, label in zip(axes, image_files, labels):
     image = Image.open(img_path)
     image = center_crop_percent(image, p, q)
     ax.imshow(image)
-    ax.set_title(label, loc='left', fontsize=10, weight='bold')
+    ax.set_title(label, loc='left', fontsize=12, weight='bold')
     ax.axis('off')
 
 plt.tight_layout()
-plt.savefig("graphics_generation/images/rfdiffusion_images.svg", dpi=600, bbox_inches='tight')
+plt.savefig("images/modeling/rfdiffusion_examples.svg", dpi=600, bbox_inches='tight')
 # plt.savefig("output.svg", )
 plt.show()

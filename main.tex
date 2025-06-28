@@ -2,17 +2,25 @@
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{lmodern}
 \usepackage{graphicx}
 \usepackage[hidelinks]{hyperref}
 \usepackage[a4paper, lmargin={4cm}, rmargin={2cm}, tmargin={2.5cm}, bmargin={2.5cm}]{geometry}
 \usepackage{enumerate}
+\usepackage{listings}
 \usepackage{amssymb}
+\usepackage{array,ragged2e}
 \usepackage{svg}
 \usepackage{amsthm}
 \usepackage{amsmath}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{booktabs}
 \usepackage{faktor}
 \usepackage{dsfont}
 \usepackage{bm}
+\usepackage[section]{placeins}
 \usepackage{nicefrac}
 \usepackage{siunitx}
 \usepackage{tabularray}
@@ -38,6 +46,7 @@
 \newtheorem{remark}[theorem]{Bemerkung}
 
 \DeclareSIUnit\angstrom{\text {Å}}
+\DeclareSIUnit\Molar{M}
 
 \DeclareMathOperator{\ip}{ip}
 \DeclareMathOperator{\cpl}{Cpl}
@@ -54,17 +63,6 @@
 \DeclareMathOperator{\ST}{ST}
 \DeclareMathOperator{\clip}{clip}
 \begin{document}
-%\begin{titlepage}
-%\title{
-    %{Adaptierte Wasserstein Metrik} \\
-    %{Westfälische Wilhelms-Universität}
-%}
-
-%\author{Kilian Mandon}
-%\date{\today}
-
-%\end{titlepage}
-
 \begin{titlepage}
     \begin{figure}[t]
         \includesvg[width=0.3\textwidth]{images/RWTH_Logo_3.svg}
@@ -76,7 +74,7 @@
        \paragraph{}$~~$\\
        \paragraph{}$~~$\\
        \textbf{Thesis} \\ 
-       \textbf{in Molecular and Applied Biotechnology (B. Sc.)} \\ 
+       \textbf{in Molecular and Applied Biotechnology (B.Sc.)} \\ 
        \textbf{at RWTH Aachen University}
        \paragraph{}$~~$\\
        \paragraph{}$~~$\\
@@ -96,24 +94,43 @@
 
 \section{Introduction}\label{ch:introduction}
 \input{chapters/01_introduction}
+\FloatBarrier
 
-\section{Notation}\label{ch:notation}
-\input{chapters/02_notation}
+% \section{Notation}\label{ch:notation}
+% \input{chapters/02_notation}
+% \FloatBarrier
 
+\part{Computational Modeling}
 \section{Symmetry Analysis and Model Building}\label{ch:symmetry}
 \input{chapters/03_symmetry}
+\FloatBarrier
 
 \section{Sequence Design with ProteinMPNN}\label{ch:pmpnn}
 \input{chapters/04_pmpnn}
+\FloatBarrier
 
 \section{Backbone Design with RFdiffusion}\label{ch:rfdiffusion}
 \input{chapters/05_rfdiffusion}
+\FloatBarrier
 
 \section{Evaluation with AlphaFold}\label{ch:alphafold}
 \input{chapters/06_alphafold}
+\FloatBarrier
 
 \section{Evaluation with GROMACS}\label{ch:gromacs}
 \input{chapters/07_gromacs}
+\FloatBarrier
+
+\part{Experimental Evaluation}
+\section{Materials}\label{ch:materials}
+\input{chapters/08_materials}
+
+\section{Methods}\label{ch:methods}
+\input{chapters/09_methods}
+
+\clearpage
+\input{chapters/appendix.tex}
+
 
 \clearpage
 \printbibliography

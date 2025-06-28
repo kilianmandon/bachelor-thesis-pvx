@@ -1,0 +1,148 @@
+# Model #5 – Use view1
+hide #*; hide #* c
+show #5 c
+coordset #5 1
+view view1
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model5-timestep1-cartoon.png supersample 3
+
+hide #*; hide #* c
+show #5
+coordset #5 1
+view view1
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model5-timestep1-atoms.png supersample 3
+
+
+hide #*; hide #* c
+show #5
+coordset #5 201
+view view1
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model5-timestep5.png supersample 3
+
+hide #*; hide #* c
+show #5
+coordset #5 951
+view view1
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model5-timestep20.png supersample 3
+
+hide #*; hide #* c
+show #5
+coordset #5 1951
+view view1
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model5-timestep40.png supersample 3
+
+hide #*; hide #* c
+show #5
+coordset #5 2451
+view view1
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model5-timestep50.png supersample 3
+
+# Model #6 – Use view2
+hide #*; hide #* c
+show #6 c
+coordset #6 1
+view view2
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model6-timestep1-cartoon.png supersample 3
+
+hide #*; hide #* c
+show #6
+coordset #6 1
+view view2
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model6-timestep1-atoms.png supersample 3
+
+hide #*; hide #* c
+show #6
+coordset #6 201
+view view2
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model6-timestep5.png supersample 3
+
+hide #*; hide #* c
+show #6
+coordset #6 951
+view view2
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model6-timestep20.png supersample 3
+
+hide #*; hide #* c
+show #6
+coordset #6 1951
+view view2
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model6-timestep40.png supersample 3
+
+hide #*; hide #* c
+show #6
+coordset #6 2451
+view view2
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model6-timestep50.png supersample 3
+
+# Model #7 – Use view2
+hide #*; hide #* c
+show #7 c
+coordset #7 1
+view view2
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model7-timestep1-cartoon.png supersample 3
+
+hide #*; hide #* c
+show #7
+coordset #7 1
+view view2
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model7-timestep1-atoms.png supersample 3
+
+hide #*; hide #* c
+show #7
+coordset #7 201
+view view2
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model7-timestep5.png supersample 3
+
+hide #*; hide #* c
+show #7
+coordset #7 951
+view view2
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model7-timestep20.png supersample 3
+
+hide #*; hide #* c
+show #7
+coordset #7 1951
+view view2
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model7-timestep40.png supersample 3
+
+hide #*; hide #* c
+show #7
+coordset #7 2451
+view view2
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model7-timestep50.png supersample 3
+
+# Model #8 – Use view3
+hide #*; hide #* c
+show #8 c
+coordset #8 1
+view view3
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model8-timestep1-cartoon.png supersample 3
+
+hide #*; hide #* c
+show #8
+coordset #8 1
+view view3
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model8-timestep1-atoms.png supersample 3
+
+hide #*; hide #* c
+show #8
+coordset #8 201
+view view3
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model8-timestep5.png supersample 3
+
+hide #*; hide #* c
+show #8
+coordset #8 951
+view view3
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model8-timestep20.png supersample 3
+
+hide #*; hide #* c
+show #8
+coordset #8 1951
+view view3
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model8-timestep40.png supersample 3
+
+hide #*; hide #* c
+show #8
+coordset #8 2451
+view view3
+save /Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories/model8-timestep50.png supersample 3
