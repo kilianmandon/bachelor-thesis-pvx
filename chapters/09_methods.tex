@@ -56,7 +56,7 @@ The plasmid and inserts and $\SI{10}{\micro\litre}$ Gibson Assembly\textsuperscr
 \subsubsection{Transformation into Competent Cells}
 Transformation of the assembled plasmids into NEB\textsuperscript{\textregistered} Turbo Competent \emph{E. coli} cells was carried out using the manufacturer's High Efficiency Transformation Protocol, using a reduced volume of cells compared to the original protocol.
 
-After thawing the cells on ice for 10 minutes, the cells were gently mixed and \SI{20}{\micro\liter} of the cells were transferred to a reaction tube on ice. TODO \SI{0}{\nano\gram} of plasmid DNA were added to the cell mixture and carefully flicked to mix cells and DNA. The mixture was placed on ice for 30 minutes. Afterwards, a heat shock at exactly \SI{42}{\celsius} was conducted for 30 seconds. The cells were thereafter placed on ice for 5 minutes. Afterwards, \SI{950}{\micro\liter} of room temperature salt medium was added to the mixture. The cells were rotated at \SI{37}{\celsius} for 60 minutes, during which LB-Amp selection plates were warmed to \SI{37}{\celsius}. The cells were mixed thoroughly by flicking the tube and inverting it. Afterwards, \SI{100}{\micro\liter} were applied to a selection plate and incubated overnight at \SI{37}{\celsius}.
+After thawing the cells on ice for 10 minutes, the cells were gently mixed and \SI{20}{\micro\liter} of the cells were transferred to a reaction tube on ice. TODO \SI{0}{\nano\gram} of plasmid DNA were added to the cell mixture and carefully flicked to mix cells and DNA. The mixture was placed on ice for 30 minutes. Afterward, a heat shock at exactly \SI{42}{\celsius} was conducted for 30 seconds. The cells were thereafter placed on ice for 5 minutes. Afterward, \SI{950}{\micro\liter} of room temperature salt medium was added to the mixture. The cells were rotated at \SI{37}{\celsius} for 60 minutes, during which LB-Amp selection plates were warmed to \SI{37}{\celsius}. The cells were mixed thoroughly by flicking the tube and inverting it. Afterward, \SI{100}{\micro\liter} were applied to a selection plate and incubated overnight at \SI{37}{\celsius}.
 
 \subsubsection{Colony PCR}
 After incubation overnight, 9 colonies of each construct were picked for Colony PCR. The master mix for the PCR was created following the composition in \autoref{tab:pcr-mix}.
@@ -79,17 +79,78 @@ Taq DNA Polymerase & \SI{0.2}{\micro\liter} \\
 \end{tabular}
 \end{table}
 
-For each sample, \SI{20}{\micro\liter} of the master mix were transferred into PCR tubes. The colonies were picked using sterile toothpicks and applied to an LB-Amp reference plate. Afterward, they were placed into the PCR tubes for about 30 seconds. The reference plate was incubated at \SI{37}{\celsius} overnight. The PCR was run using the program from \autoref{tab:methods_pcr_cycle}.
+For bidirectional sequencing sample, \SI{20}{\micro\liter} of the master mix were transferred into PCR tubes. The colonies were picked using sterile toothpicks and applied to an LB-Amp reference plate. Afterward, they were placed into the PCR tubes for about 30 seconds. The reference plate was incubated at \SI{37}{\celsius} overnight. The PCR was run using the program from \autoref{tab:methods_pcr_cycle} and was followed by an agarose gel electrophoresis as previously described for analysis of the PCR products. 
+
 \subsubsection{Plasmid Mini-Preparation and Sequencing}
+For ebidirectional sequencing construct, two clones showing successful amplification during the colony PCR were selected for a plasmid mini preparation and sequencing. \SI{6}{\milli\liter} of LB-AMP medium were inoculated and incubated overnight at \SI{37}{\celsius}. 
+
+The next day, the culture was centrifuged over three rounds of \SI{2}{\milli\liter} each for \SI{3}{\minute} at \SI{6500}{\times g}, disposing of the supernatant. The pellet was fully resuspended by vortexing with \SI{600}{\micro\liter} of MQ-H\textsubscript{2}O. Then, \SI{100}{\micro\liter} of cell lysis buffer were added and the reaction tube was carefully inverted for mixing. Afterward, \SI{350}{\micro\liter} of neutralization solution were added, and the tube was inverted until a full color change to yellow occurred. 
+
+The solution was centrifuged for \SI{10}{\minute} at \SI{21300}{\times g}. Afterward, the supernatant was pipetted onto a PureYield\textsuperscript{\texttrademark} mini column. The column was centrifuged for \SI{15}{\second} at \SI{21300}{\times g}, and the flow-through was discarded.
+
+\SI{200}{\micro\liter} of endotoxin removal wash were added to the column, followed by centrifugation for \SI{15}{\second} at \SI{21300}{\times g}, again discarding the flow-through. Then, \SI{400}{\micro\liter} of column wash solution were added to the column, followed by centrifugation for \SI{30}{\second} at maximum speed. The flow-through was discarded.
+
+The column was transferred to a new reaction tube. Elution was performed using \SI{30}{\micro\liter} of nuclease-free water. After application of the water and incubation for \SI{1}{\minute} at room temperature, the column was centrifuged for \SI{15}{\second} at \SI{21300}{\times g}. The concentration of the plasmid in the flow-through was determined using the NanoDrop\textsuperscript{\texttrademark} One.
+
+The purified plasmids were diluted to a final concentration of \SI{100}{\nano\gram\per\micro\litre}. In a Mix2Seq kit, \SI{5}{\micro\litre} of the plasmid was mixed with \SI{5}{\micro\litre} of pLenSeq fwd (\SI{10}{\micro\Molar}) in one compartment and with \SI{5}{\micro\litre} of pLenSeq rev (\SI{10}{\micro\Molar}) in another compartment. The kit was sent for sequencing.
+
 \subsubsection{Plasmid Midi-Preparation}
+% TODO: Write this
 
 \subsection{Protein Expression and Purification}
 \subsubsection{Cell-Free Protein Expression}
+Cell-Free protein expression of the constructs d29-A, S-Tag-A, and S-Tag-B was conducted using an ALiCE\textsuperscript{\textregistered} for Research kit. Before starting the reaction, the plasmids pLenEx-d29-A, pLenEx-S-Tag-A, pLenEx-S-Tag-B, pLenEx-PVX-CP (TODO Lookup name), and pLenEx-Strep-eYFP (all from purification using a NucleoBond Xtra Midi kit) were concentrated using speed vacuuming at \SI{30}{\degreeCelsius} to concentrations between \SI{1400}{\nano\gram\per\micro\litre} and \SI{3300}{\nano\gram\per\micro\litre}. The volumes of plasmid DNA to be used for the cell-free reaction were calculated according to \autoref{eq:alice_calc}. The final plasmid concentration was chosen as \SI{50}{\nano\Molar}. 
+
+\begin{align}
+    \label{eq:alice_calc}
+    \begin{split}
+V_{\text{DNA}}\, [\si{\micro\liter}] =&\left( L_{\text{plasmid}}\, [\text{bp}] \cdot 618\ \frac{\text{g}}{\text{mol} \cdot \text{bp}} \right) \cdot\ V_{\text{reaction}}\, [\si{\micro\liter}] \\
+& \cdot\ \left( \frac{c_{\text{final}}\, [\si{\nano\Molar}]}{c_{\text{stock}}\, [\si{\nano\gram}/\si{\micro\liter}]} \right) \cdot\ 10^{-6}
+    \end{split}
+\end{align}
+
+Before starting the reaction, the \SI{50}{\micro\litre} ALiCE tubes were fully thawed in a heating block at \SI{25}{\degreeCelsius}. The solution was mixed by inverting the tubes and centrifuged for 5 seconds at \SI{100}{\times g} to collect the liquid. After centrifugation, the tubes were placed on ice. The lids were perforated with a single hole using a needle (TODO Lookup diameter). The appropriate volume of the plasmids pLenEx-d29-A, pLenEx-S-Tag-A, pLenEx-S-Tag-B, pLenEx-PVX-CP (TODO Lookup name), and pLenEx-Strep-eYFP were added to the respective reaction tubes. Additionally, a non-template control was set up by adding \SI{2}{\micro\litre} MQ-H\textsubscript{2}O. The reaction was incubated at \SI{25}{\degreeCelsius} on an Eppendorf ThermoMixer at \SI{700}{rpm} for \SI{48}{\hour}. Afterward, the reaction tubes were placed on ice to stop the reaction, before being frozen at \SI{-20}{\degreeCelsius}. 
+
 \subsubsection{Protein Purification Using Capto Core 700}
+Following cell-free protein expression, size exclusion chromatography using Capto\textsuperscript{\texttrademark} Core 700 multimodal chromatography resin was conducted to purify large particles. \SI{1}{\milli\litre} Capto\textsuperscript{\texttrademark} Core matrix was suspended in \SI{3}{\milli\litre} of \SI{0.1}{\Molar} phosphate buffer (pH 7.2) within a column and full sedimentation was awaited. \SI{30}{\micro\litre} of the cell-free expression solution were applied to the column and incubated for \SI{5}{\minute}. Afterward, the flow-through was collected. The column was cleaned using \SI{3}{\milli\litre} of a solution out of \SI{1.5}{\milli\litre} \SI{30}{\percent} isopropyl alcohol and \SI{1.5}{\milli\litre} \SI{1}{\Molar} NaOH. The column was stored in \SI{20}{\percent} ethanol at \SI{4}{\degreeCelsius} and reused multiple times. The chromatography was used on the samples d29-A, S-Tag-A, S-Tag-B, and PVX-CP. 
 
 \subsection{Protein Analysis}
 \subsubsection{SDS-PAGE}
+Samples from cell-free protein expression, both before and after purification with the Capto\textsuperscript{\texttrademark} Core 700 column, were used in an discontinuous SDS polyacrylamide gel electrophoresis (SDS-PAGE) for further use with Coomassie Staining and Western Blot. 
+
+The composition of the resolving gel and the stacking gel are listed in \autoref{tab:sds_gels_content}. All reagents used for the resolving gel, except for the ammonium persulfate (APS), were mixed together by vortexing. After addition of APS, the solution was shortly vortexed and about \SI{5}{\milli\litre} of the gel were transferred into a $\SI{0.75}{\milli\metre}$ thick chamber for polymerization. Directly afterward, isopropyl alcohol was added to the top of the gel. 
+
+After polymerization, the isopropyl alcohol was removed using Whatman paper. The components for the stacking gel were mixed, APS was added, and the stacking gel was poured on top of the resolving gel. A comb was inserted into the stacking gel to create sample pockets.
+
+\begin{table}[h]
+    \label{tab:sds_gels_content}
+    \centering
+    \caption{\textbf{Composition of discontinuous SDS-PAGE gels.} The amounts are shown for the preparation of two gels.}
+    \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{Component} & \textbf{Resolving Gel (T = 12\%)} & \textbf{Stacking Gel (T = 4\%)} \\
+    \midrule
+    MQ-H\textsubscript{2}O       & \SI{2.115}{\milli\liter} & \SI{3.645}{\milli\liter} \\
+    Tris-HCl stock (1 M)                    & \SI{3.75}{\milli\liter} (pH 8.8)  & \SI{625}{\micro\liter} (pH 6.8)  \\
+    AA stock (30\%)                                       & \SI{4}{\milli\liter}     & \SI{830}{\micro\liter}   \\
+    SDS (10\%)                                            & \SI{100}{\micro\liter}   & \SI{50}{\micro\liter}    \\
+    TEMED                                                & \SI{10}{\micro\liter}    & \SI{5}{\micro\liter}     \\
+    APS (20\%)                                            & \SI{30}{\micro\liter}    & \SI{15}{\micro\liter}    \\
+    \textbf{Total Volume}                                 & \SI{10}{\milli\liter}    & \SI{5}{\milli\liter}     \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+After polymerization of the stacking gel, the gel was either directly used in electrophoresis, or wrapped into wet paper and stored at \SI{4}{\degreeCelsius} for up to a week. 
+
+For electrophoresis, the gel was placed vertically in a chamber containing SDS running buffer. The samples were mixed with 5x reducing loading buffer in a 4:1 ratio and boiled for \SI{5}{\min}. \SI{10}{\micro\litre} sample volume was transferred into the gel pockets, and the marker Color Prestained Protein Standard, Broad Range (10-250 kDa) by New England Biolabs was used as marker. The gel was run at \SI{180}{\volt} for about one hour. 
+
 \subsubsection{Coomassie Staining}
+After completion of the SDS-PAGE, the gels were placed in Coomassie Staining solution for 30 minutes, while being gently swiveled on an orbital stainer. The Coomassie Staining solution was removed, and destaining solution was added to the gel, still being swiveled. The destaining solution was replaced multiple times, before destaining was complete. 
+
 \subsubsection{Western Blot}
+For immunologic detection of specific epitopes on the SDS gel, Western Blotting was conducted. The gel was placed in semi-dry transfer buffer, and eight layers of Whatman paper as well as a nitrocellulose membrane were soaked in semi-dry transfer buffer for \SI{5}{\min}. Then, a stack of four layers of Whatman paper, the nitrocellulose membrane, the gel, and four layers of Whatman paper, was assembled in the blotting chamber of a Trans-Blot\textsuperscript{\textregistered} Turbo\textsuperscript{\texttrademark} machine. Transfer to the membrane took place at a constant voltage of \SI{25}{\volt} and a current of maximally \SI{1}{\ampere}.
+
+After blotting, the membrane was cut to the size of the gel, placed into \SI{10}{\milli\litre} blocking buffer and incubated for \SI{30}{\min} under swiveling. The blocking buffer was removed, and the membrane was washed three times with PBS buffer, waiting \SI{5}{\min} between each exchange of the buffer. The primary antibody (either Rabbit-Anti-PVX in a 1:5000 ratio or Mouse-Anti-S-Tag in a 1:10000 ratio) was dissolved in \SI{10}{\milli\litre} PBS buffer and added to the membrane. Incubation with the primary antibody was conducted overnight at room temperature or over the weekend at \SI{4}{\degreeCelsius}. Afterward, the three washing steps were repeated and the secondary antibody was added (either Goat-Anti-Rabbit FC AP or Goat-Anti-Mouse FC AP, both in a 1:5000 ratio in PBS). 
 \subsubsection{ELISA}
 \subsubsection{Electron Microscopy}
