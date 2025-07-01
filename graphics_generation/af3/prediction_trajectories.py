@@ -4,7 +4,20 @@ import numpy as np
 import os
 import scienceplots
 
-plt.style.use('science')
+for_powerpoint = True
+
+if for_powerpoint:
+    fontsize = 14
+    figsize = (7, 1.5)
+    plt.rcParams.update({
+        "font.family": "sans-serif",
+        "font.sans-serif": ["Arial"],
+        "font.size": fontsize,
+    })
+else:
+    fontsize = 12
+    plt.style.use('science')
+    figsize = (5.91, 1.5)
 
 # Config
 base_path = "/Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/af3_trajectories"
@@ -17,7 +30,6 @@ timestep_names = {
 # timesteps = [200, 160, 20]
 t1_variants = ["atoms"]
 margin_ratio = 0.1
-figsize = (5.91, 1.5)
 
 row_labels_dict = {
     'basic': 'Default',
@@ -119,27 +131,29 @@ def plot_rows(model_names, title=None, add_row_labels=True, top_row_labels_only=
                 ax.set_facecolor("gray")
                 ax.text(0.5, 0.5, "Missing", ha='center', va='center', transform=ax.transAxes)
             if (not top_row_labels_only) or row_idx == 0:
-                ax.set_title(label, fontsize=12)
+                ax.set_title(label, fontsize=fontsize)
             ax.axis("off")
 
         if add_row_labels:
             ax = axes[row_idx][0] if num_cols > 1 else axes[0]
             ax.text(-0.5, 0.5, row_labels_dict[model_name], va='center', ha='center', multialignment='center',
-                    transform=ax.transAxes, fontsize=12)
+                    transform=ax.transAxes, fontsize=fontsize)
         else:
             ax = axes[row_idx][0] if num_cols > 1 else axes[0]
             # label = [r'\textbf{a}', r'\textbf{b}'][row_idx]
             label = ['a', 'b'][row_idx]
-            ax.set_title(label, loc='left', fontsize=12, weight='bold')
+            ax.set_title(label, loc='left', fontsize=fontsize, weight='bold')
 
     if title:
-        fig.suptitle(title, fontsize=12)
+        fig.suptitle(title, fontsize=fontsize)
 
     plt.tight_layout()
 
 
 # Call the function with desired rows
 plot_rows(['basic', 'aligned'], add_row_labels=True, top_row_labels_only=False)
-plt.savefig('images/modeling/af3_traj_basic.svg', dpi=600)
+save_path = 'images/modeling/af3_traj_basic_colloq.svg' if for_powerpoint else 'images/modeling/af3_traj_basic.svg'
+
+plt.savefig(save_path, dpi=600)
 # plot_rows([6, 7], add_row_labels=True, top_row_labels_only=False)
 # plt.savefig('images/modeling/rfdiffusion_traj_symmetry.svg', dpi=600)

@@ -14,8 +14,8 @@ MQ-H\textsubscript{2}O & \SI{38}{\micro\litre} \\
 dNTPs ($\SI{10}{\milli\Molar}$) & \SI{2}{\micro\litre} \\
 Forward Primer (\SI{10}{\micro\Molar}) & \SI{2}{\micro\litre} \\
 Reverse Primer (\SI{10}{\micro\Molar}) & \SI{2}{\micro\litre} \\
-Pfu DNA Polymerase (TODO: Lookup activity) & \SI{0.5}{\micro\litre} \\
-DNA template (TODO: Lookup concentration) & \SI{5}{\micro\litre}  \\
+Pfu DNA Polymerase (\SI{3}{\enzymeUnit\per\micro\litre}) & \SI{0.5}{\micro\litre} \\
+DNA template (\SI{10}{\nano\gram\per\micro\litre}) & \SI{5}{\micro\litre}  \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -39,7 +39,7 @@ The PCR reaction was conducted in a thermocycler. The exact program is described
     \end{tabular}
 \end{table}
 \subsubsection{Plasmid Restriction Digest}
-The plasmid pLenEx-Strep-eYFP was digested using the restriction enzymes NcoI-HF and KpnI-HF. Therefore, $\SI{10}{\micro\gram}$ of the plasmid, $\SI{5}{\micro\litre}$ CutSmart\textsuperscript{\textregistered} Buffer, $\SI{1}{\micro\litre}$ of NcoI-HF (TODO: Lookup activity), and $\SI{1}{\micro\litre}$ of KpnI-HF (TODO: Lookup activity) were added to MQ-H\textsubscript{2}O up to a total volume of $\SI{50}{\micro\litre}$. The mixture was incubated at $\SI{37}{\degreeCelsius}$ for three hours and thereafter frozen at $\SI{-20}{\degreeCelsius}$ until further processing. 
+The plasmid pLenEx-Strep-eYFP was digested using the restriction enzymes NcoI-HF and KpnI-HF. Therefore, $\SI{10}{\micro\gram}$ of the plasmid, $\SI{5}{\micro\litre}$ CutSmart\textsuperscript{\textregistered} Buffer, $\SI{1}{\micro\litre}$ of NcoI-HF (\SI{20}{\enzymeUnit\per\micro\litre}), and $\SI{1}{\micro\litre}$ of KpnI-HF (\SI{20}{\enzymeUnit\per\micro\litre}) were added to MQ-H\textsubscript{2}O up to a total volume of $\SI{50}{\micro\litre}$. The mixture was incubated at $\SI{37}{\degreeCelsius}$ for three hours and thereafter frozen at $\SI{-20}{\degreeCelsius}$ until further processing. 
 
 \subsubsection{Agarose Gel Electrophoresis and DNA Recovery}
 Agarose gel electrophoresis was used to validate and purify the restricted plasmid and the PCR products. $\SI{50}{\micro\litre}$ of each sample were mixed with $\SI{5}{\micro\litre}$ 10x Sabu and applied to the gel, splitting the sample into $\SI{25}{\micro\litre}$ per track. The gels were run at either $\SI{100}{\volt}$ for about 45 minutes or at $\SI{120}{\volt}$ for about 60 minutes, depending on the size of the gel. After the gel ran through, the samples were cut out under illumination from a UV light source. The DNA was recovered from the gel samples using the Wizard\textsuperscript{\textregistered} SV Gel and PCR Clean-Up System. The steps were carried out following the manufacturer's protocol. DNA concentrations of each sample were determined using the NanoDrop\textsuperscript{\texttrademark} One.
@@ -56,7 +56,7 @@ The plasmid and inserts and $\SI{10}{\micro\litre}$ Gibson Assembly\textsuperscr
 \subsubsection{Transformation into Competent Cells}
 Transformation of the assembled plasmids into NEB\textsuperscript{\textregistered} Turbo Competent \emph{E. coli} cells was carried out using the manufacturer's High Efficiency Transformation Protocol, using a reduced volume of cells compared to the original protocol.
 
-After thawing the cells on ice for 10 minutes, the cells were gently mixed and \SI{20}{\micro\liter} of the cells were transferred to a reaction tube on ice. TODO \SI{0}{\nano\gram} of plasmid DNA were added to the cell mixture and carefully flicked to mix cells and DNA. The mixture was placed on ice for 30 minutes. Afterward, a heat shock at exactly \SI{42}{\celsius} was conducted for 30 seconds. The cells were thereafter placed on ice for 5 minutes. Afterward, \SI{950}{\micro\liter} of room temperature salt medium was added to the mixture. The cells were rotated at \SI{37}{\celsius} for 60 minutes, during which LB-Amp selection plates were warmed to \SI{37}{\celsius}. The cells were mixed thoroughly by flicking the tube and inverting it. Afterward, \SI{100}{\micro\liter} were applied to a selection plate and incubated overnight at \SI{37}{\celsius}.
+After thawing the cells on ice for 10 minutes, the cells were gently mixed and \SI{20}{\micro\liter} of the cells were transferred to a reaction tube on ice. \SI{2}{\micro\litre} of the Gibson Assembly product were added to the cell mixture and carefully flicked to mix cells and DNA. The mixture was placed on ice for 30 minutes. Afterward, a heat shock at exactly \SI{42}{\celsius} was conducted for 30 seconds. The cells were thereafter placed on ice for 5 minutes. Afterward, \SI{950}{\micro\liter} of room temperature salt medium was added to the mixture. The cells were rotated at \SI{37}{\celsius} for 60 minutes, during which LB-Amp selection plates were warmed to \SI{37}{\celsius}. The cells were mixed thoroughly by flicking the tube and inverting it. Afterward, \SI{100}{\micro\liter} were applied to a selection plate and incubated overnight at \SI{37}{\celsius}.
 
 \subsubsection{Colony PCR}
 After incubation overnight, 9 colonies of each construct were picked for Colony PCR. The master mix for the PCR was created following the composition in \autoref{tab:pcr-mix}.
@@ -79,10 +79,10 @@ Taq DNA Polymerase & \SI{0.2}{\micro\liter} \\
 \end{tabular}
 \end{table}
 
-For bidirectional sequencing sample, \SI{20}{\micro\liter} of the master mix were transferred into PCR tubes. The colonies were picked using sterile toothpicks and applied to an LB-Amp reference plate. Afterward, they were placed into the PCR tubes for about 30 seconds. The reference plate was incubated at \SI{37}{\celsius} overnight. The PCR was run using the program from \autoref{tab:methods_pcr_cycle} and was followed by an agarose gel electrophoresis as previously described for analysis of the PCR products. 
+The colonies were picked using sterile toothpicks and applied to an LB-Amp reference plate. Afterward, they were placed into the PCR tubes for about 30 seconds. The reference plate was incubated at \SI{37}{\celsius} overnight. The PCR was run using the program from \autoref{tab:methods_pcr_cycle} and was followed by an agarose gel electrophoresis as previously described for analysis of the PCR products. 
 
 \subsubsection{Plasmid Mini-Preparation and Sequencing}
-For ebidirectional sequencing construct, two clones showing successful amplification during the colony PCR were selected for a plasmid mini preparation and sequencing. \SI{6}{\milli\liter} of LB-AMP medium were inoculated and incubated overnight at \SI{37}{\celsius}. 
+For each construct, two clones showing successful amplification during the colony PCR were selected for a plasmid mini preparation and sequencing. \SI{6}{\milli\liter} of LB-AMP medium were inoculated and incubated overnight at \SI{37}{\celsius}. 
 
 The next day, the culture was centrifuged over three rounds of \SI{2}{\milli\liter} each for \SI{3}{\minute} at \SI{6500}{\times g}, disposing of the supernatant. The pellet was fully resuspended by vortexing with \SI{600}{\micro\liter} of MQ-H\textsubscript{2}O. Then, \SI{100}{\micro\liter} of cell lysis buffer were added and the reaction tube was carefully inverted for mixing. Afterward, \SI{350}{\micro\liter} of neutralization solution were added, and the tube was inverted until a full color change to yellow occurred. 
 
@@ -95,11 +95,19 @@ The column was transferred to a new reaction tube. Elution was performed using \
 The purified plasmids were diluted to a final concentration of \SI{100}{\nano\gram\per\micro\litre}. In a Mix2Seq kit, \SI{5}{\micro\litre} of the plasmid was mixed with \SI{5}{\micro\litre} of pLenSeq fwd (\SI{10}{\micro\Molar}) in one compartment and with \SI{5}{\micro\litre} of pLenSeq rev (\SI{10}{\micro\Molar}) in another compartment. The kit was sent for sequencing.
 
 \subsubsection{Plasmid Midi-Preparation}
-% TODO: Write this
+After successful sequencing, the clones were used in a midi-preparation for use of the plasmids in cell-free protein expression. As recommended by the cell-free expression kit's manufacturer, the Macherey-Nagel\textsuperscript{\textregistered} NucleoBond\textsuperscript{\textregistered} Xtra kit was used for the preparation. 
+
+The midi-preparation was conducted following the manufacturer's protocol for low-copy plasmids. Concretely, \SI{200}{\milli\liter} of LB-AMP medium were inoculated and incubated overnight at \SI{37}{\celsius}. The next morning, the cell culture was centrifuged at \SI{4500}{\times g} at \SI{4}{\celsius} for \SI{15}{\minute}. The pellet was resuspended in \SI{16}{\milli\liter} RES buffer by vortexing. Lysis was conducted in \SI{16}{\milli\liter} of LYS buffer at room temperature for \SI{5}{\minute}. Neutralization was performed using \SI{16}{\milli\liter} of NEU buffer. 
+
+The NucleoBond column, including the filter, was equilibrated with \SI{12}{\milli\liter} EQU buffer. For clarification of the lysate, centrifugation at \SI{5000}{\times g} and \SI{4}{\celsius} for \SI{10}{\minute} was conducted. Some precipitate remained in the reaction tube and was carefully decanted before applying the lysate to the column on top of the column's filter. Washing was done with \SI{5}{\milli\liter} of EQU buffer. Afterward, the filter was removed and washing was repeated using \SI{8}{\milli\liter} of Wash buffer. Elution was conducted using \SI{5}{\milli\liter} of ELU buffer.
+
+For precipitation, \SI{3.5}{\milli\liter} of isopropyl alcohol were added to the mixture. A centrifugation at \SI{5000}{\times g} and \SI{4}{\celsius} for \SI{1}{\hour} was conducted. The supernatant was discarded. Then, \SI{2}{\milli\liter} of \SI{70}{\percent} ethanol were added, followed by a second centrifugation at \SI{5000}{\times g} for \SI{5}{\minute} at \SI{20}{\celsius}. The ethanol was carefully removed by pipetting, and the reaction tube was dried for \SI{10}{\minute}. 
+
+Afterward, the DNA was resuspended in \SI{500}{\micro\liter} MQ-H\textsubscript{2}O. The concentration was determined using the NanoDrop\textsuperscript{\texttrademark} One.
 
 \subsection{Protein Expression and Purification}
 \subsubsection{Cell-Free Protein Expression}
-Cell-Free protein expression of the constructs d29-A, S-Tag-A, and S-Tag-B was conducted using an ALiCE\textsuperscript{\textregistered} for Research kit. Before starting the reaction, the plasmids pLenEx-d29-A, pLenEx-S-Tag-A, pLenEx-S-Tag-B, pLenEx-PVX-CP (TODO Lookup name), and pLenEx-Strep-eYFP (all from purification using a NucleoBond Xtra Midi kit) were concentrated using speed vacuuming at \SI{30}{\degreeCelsius} to concentrations between \SI{1400}{\nano\gram\per\micro\litre} and \SI{3300}{\nano\gram\per\micro\litre}. The volumes of plasmid DNA to be used for the cell-free reaction were calculated according to \autoref{eq:alice_calc}. The final plasmid concentration was chosen as \SI{50}{\nano\Molar}. 
+Cell-Free protein expression of the constructs d29-A, S-Tag-A, and S-Tag-B was conducted using an ALiCE\textsuperscript{\textregistered} for Research kit. Before starting the reaction, the plasmids pLenEx-d29-A, pLenEx-S-Tag-A, pLenEx-S-Tag-B, pLenEx-CP-PVX, and pLenEx-Strep-eYFP (all from purification using a NucleoBond Xtra Midi kit) were concentrated using speed vacuuming at \SI{30}{\degreeCelsius} to concentrations between \SI{1400}{\nano\gram\per\micro\litre} and \SI{3300}{\nano\gram\per\micro\litre}. The volumes of plasmid DNA to be used for the cell-free reaction were calculated according to \autoref{eq:alice_calc}. The final plasmid concentration was chosen as \SI{50}{\nano\Molar}. 
 
 \begin{align}
     \label{eq:alice_calc}
@@ -109,7 +117,7 @@ V_{\text{DNA}}\, [\si{\micro\liter}] =&\left( L_{\text{plasmid}}\, [\text{bp}] \
     \end{split}
 \end{align}
 
-Before starting the reaction, the \SI{50}{\micro\litre} ALiCE tubes were fully thawed in a heating block at \SI{25}{\degreeCelsius}. The solution was mixed by inverting the tubes and centrifuged for 5 seconds at \SI{100}{\times g} to collect the liquid. After centrifugation, the tubes were placed on ice. The lids were perforated with a single hole using a needle (TODO Lookup diameter). The appropriate volume of the plasmids pLenEx-d29-A, pLenEx-S-Tag-A, pLenEx-S-Tag-B, pLenEx-PVX-CP (TODO Lookup name), and pLenEx-Strep-eYFP were added to the respective reaction tubes. Additionally, a non-template control was set up by adding \SI{2}{\micro\litre} MQ-H\textsubscript{2}O. The reaction was incubated at \SI{25}{\degreeCelsius} on an Eppendorf ThermoMixer at \SI{700}{rpm} for \SI{48}{\hour}. Afterward, the reaction tubes were placed on ice to stop the reaction, before being frozen at \SI{-20}{\degreeCelsius}. 
+Before starting the reaction, the \SI{50}{\micro\litre} ALiCE tubes were fully thawed in a heating block at \SI{25}{\degreeCelsius}. The solution was mixed by inverting the tubes and centrifuged for 5 seconds at \SI{100}{\times g} to collect the liquid. After centrifugation, the tubes were placed on ice. The lids were perforated with a single hole using a needle (\SI{0.9}{\milli\meter} diameter). The appropriate volume of the plasmids pLenEx-d29-A, pLenEx-S-Tag-A, pLenEx-S-Tag-B, pLenEx-CP-PVX, and pLenEx-Strep-eYFP were added to the respective reaction tubes. Additionally, a non-template control was set up by adding \SI{2}{\micro\litre} MQ-H\textsubscript{2}O. The reaction was incubated at \SI{25}{\degreeCelsius} on an Eppendorf ThermoMixer at \SI{700}{rpm} for \SI{48}{\hour}. Afterward, the reaction tubes were placed on ice to stop the reaction, before being frozen at \SI{-20}{\degreeCelsius}. 
 
 \subsubsection{Protein Purification Using Capto Core 700}
 Following cell-free protein expression, size exclusion chromatography using Capto\textsuperscript{\texttrademark} Core 700 multimodal chromatography resin was conducted to purify large particles. \SI{1}{\milli\litre} Capto\textsuperscript{\texttrademark} Core matrix was suspended in \SI{3}{\milli\litre} of \SI{0.1}{\Molar} phosphate buffer (pH 7.2) within a column and full sedimentation was awaited. \SI{30}{\micro\litre} of the cell-free expression solution were applied to the column and incubated for \SI{5}{\minute}. Afterward, the flow-through was collected. The column was cleaned using \SI{3}{\milli\litre} of a solution out of \SI{1.5}{\milli\litre} \SI{30}{\percent} isopropyl alcohol and \SI{1.5}{\milli\litre} \SI{1}{\Molar} NaOH. The column was stored in \SI{20}{\percent} ethanol at \SI{4}{\degreeCelsius} and reused multiple times. The chromatography was used on the samples d29-A, S-Tag-A, S-Tag-B, and PVX-CP. 

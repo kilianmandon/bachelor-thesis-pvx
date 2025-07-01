@@ -4,7 +4,21 @@ import numpy as np
 import os
 import scienceplots
 
-plt.style.use('science')
+for_powerpoint = False
+
+if for_powerpoint:
+    fontsize = 14
+    figsize = (7, 1.5)
+    plt.rcParams.update({
+        "font.family": "sans-serif",
+        "font.sans-serif": ["Arial"],
+        "font.size": fontsize,
+    })
+else:
+    fontsize = 12
+    plt.style.use('science')
+    figsize = (5.91, 1.5)
+
 
 # Config
 base_path = "/Users/kilianmandon/Desktop/Bachelor/bachelor-thesis-pvx/chimeraX/rfdiffusion_trajectories"
@@ -12,11 +26,10 @@ model_ids = [8, 5, 6, 7]  # Reordered: [Symmetric Noise, Full Symmetrization, In
 timesteps = [50, 40, 5]
 t1_variants = ["atoms"]
 margin_ratio = 0.1
-figsize = (5.91, 1.5)
 
 row_labels_dict = {
     8: "Unconditional\nGeneration",
-    5: "Symemtric\nNoise",
+    5: "Symmetric\nNoise",
     6: "Full\nSymmetrization",
     7: "Initial\nSymmetrization"
 }
@@ -108,27 +121,36 @@ def plot_rows(model_id_subset, title=None, add_row_labels=True, top_row_labels_o
                 ax.set_facecolor("gray")
                 ax.text(0.5, 0.5, "Missing", ha='center', va='center', transform=ax.transAxes)
             if (not top_row_labels_only) or row_idx == 0:
-                ax.set_title(label, fontsize=12)
+                ax.set_title(label, fontsize=fontsize)
             ax.axis("off")
 
         if add_row_labels:
             ax = axes[row_idx][0] if num_cols > 1 else axes[0]
             ax.text(-0.5, 0.5, row_labels_dict[model_id], va='center', ha='center', multialignment='center',
-                    transform=ax.transAxes, fontsize=12)
+                    transform=ax.transAxes, fontsize=fontsize)
         else:
             ax = axes[row_idx][0] if num_cols > 1 else axes[0]
             # label = [r'\textbf{a}', r'\textbf{b}'][row_idx]
             label = ['a', 'b'][row_idx]
-            ax.set_title(label, loc='left', fontsize=12, weight='bold')
+            ax.set_title(label, loc='left', fontsize=fontsize, weight='bold')
 
     if title:
-        fig.suptitle(title, fontsize=12)
+        fig.suptitle(title, fontsize=fontsize)
 
-    plt.tight_layout()
+    plt.tight_layout(pad=0.5)
 
 
 # Call the function with desired rows
+if for_powerpoint:
+    out_paths = ['images/modeling/rfdiffusion_traj_basic_colloq.svg',
+                'images/modeling/rfdiffusion_traj_symmetry_colloq.svg'
+                 ]
+else:
+    out_paths = ['images/modeling/rfdiffusion_traj_basic.svg',
+                'images/modeling/rfdiffusion_traj_symmetry.svg'
+                 ]
+        
 plot_rows([8, 5], add_row_labels=True, top_row_labels_only=False)
-plt.savefig('images/modeling/rfdiffusion_traj_basic.svg', dpi=600)
+plt.savefig(out_paths[0], dpi=600)
 plot_rows([6, 7], add_row_labels=True, top_row_labels_only=False)
-plt.savefig('images/modeling/rfdiffusion_traj_symmetry.svg', dpi=600)
+plt.savefig(out_paths[1], dpi=600)
