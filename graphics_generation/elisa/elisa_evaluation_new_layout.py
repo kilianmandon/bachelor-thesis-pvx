@@ -166,6 +166,6 @@ file_paths = {
     'pvx': 'graphics_generation/elisa/tecan/elisa_anti_pvx_15_min.xlsx',
     's-tag': 'graphics_generation/elisa/tecan/elisa_anti_s_15_min.xlsx',
 }
-for_powerpoint=True
+for_powerpoint=False
 
 evaluate_elisa(file_paths, for_powerpoint=for_powerpoint)

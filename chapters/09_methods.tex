@@ -1,6 +1,6 @@
 \subsection{DNA Cloning}
 \subsubsection{PCR Amplification of Insert DNA}
-Using the synthetic genes S-Tag-A and S-Tag-B (Subsection \ref{subseq:synthetic_genes}) and the primer pairs d29-A fwd / d29-A rev (with template S-Tag-A), S-Tag-A fwd / d29-A rev (with template S-Tag-A), and S-Tag-B fwd / S-Tag-B rev (with template S-Tag-B), polymerase chain reactions (PCRs) were conducted for amplification of the inserts. The primers also introduced overlapping regions with the plasmid pLenEx-Strep-eYFP for the following Gibson Assembly, and in the case of d29-A fwd, a start codon. The PCR was conducted with a Pfu polymerase. The composition of the PCR mix is listed in Table \ref{tab:methods_pcr_composition}.
+Using the synthetic genes S-Tag-A and S-Tag-B (\autoref{subseq:synthetic_genes}) and the primer pairs d29-A fwd / d29-A rev (with template S-Tag-A), S-Tag-A fwd / d29-A rev (with template S-Tag-A), and S-Tag-B fwd / S-Tag-B rev (with template S-Tag-B), polymerase chain reactions (PCRs) were conducted for amplification of the inserts. The primers also introduced overlapping regions with the plasmid pLenEx-Strep-eYFP for the following Gibson Assembly, and in the case of d29-A fwd, a start codon. The PCR was conducted with a Pfu polymerase. The composition of the PCR mix is listed in \autoref{tab:methods_pcr_composition}.
 \begin{table}
     \centering
     \caption{\textbf{Composition of the PCR Mix for Insert Amplification. }}
@@ -19,7 +19,7 @@ DNA template (\SI{10}{\nano\gram\per\micro\litre}) & \SI{5}{\micro\litre}  \\
 \bottomrule
 \end{tabular}
 \end{table}
-The PCR reaction was conducted in a thermocycler. The exact program is described in Table \ref{tab:methods_pcr_cycle}. After running the PCR, the products were frozen at $\SI{-20}{\degreeCelsius}$ until further processing.
+The PCR reaction was conducted in a thermocycler. The exact program is described in \autoref{tab:methods_pcr_cycle}. After running the PCR, the products were frozen at $\SI{-20}{\degreeCelsius}$ until further processing.
 \begin{table}[ht]
     \centering
     \caption{\textbf{PCR Program used for Insert Amplification.}}
@@ -45,7 +45,7 @@ The plasmid pLenEx-Strep-eYFP was digested using the restriction enzymes NcoI-HF
 Agarose gel electrophoresis was used to validate and purify the restricted plasmid and the PCR products. $\SI{50}{\micro\litre}$ of each sample were mixed with $\SI{5}{\micro\litre}$ 10x Sabu and applied to the gel, splitting the sample into $\SI{25}{\micro\litre}$ per track. The gels were run at either $\SI{100}{\volt}$ for about 45 minutes or at $\SI{120}{\volt}$ for about 60 minutes, depending on the size of the gel. After the gel ran through, the samples were cut out under illumination from a UV light source. The DNA was recovered from the gel samples using the Wizard\textsuperscript{\textregistered} SV Gel and PCR Clean-Up System. The steps were carried out following the manufacturer's protocol. DNA concentrations of each sample were determined using the NanoDrop\textsuperscript{\texttrademark} One.
 
 \subsubsection{Gibson Assembly}
-A Gibson Assembly using $\SI{50}{\nano\gram}$ of purified linear vector DNA was conducted to create the plasmids pLenEx-d29-A, pLenEx-S-Tag-A, and pLenEx-S-Tag-B. The required mass of insert DNA was calculated using Equation \ref{eq:gibson}.
+A Gibson Assembly using $\SI{50}{\nano\gram}$ of purified linear vector DNA was conducted to create the plasmids pLenEx-d29-A, pLenEx-S-Tag-A, and pLenEx-S-Tag-B. The required mass of insert DNA was calculated using \autoref{eq:gibson}.
 \begin{equation}\label{eq:gibson}
 \text{Mass}_{\text{insert}} = \left(\frac{\text{desired molar ratio}}{1}\right) \times \text{Mass}_{\text{vector}} \times \left(\frac{\text{Length}_{\text{insert}}}{\text{Length}_{\text{vector}}}\right)
 \end{equation}
@@ -154,7 +154,7 @@ After polymerization of the stacking gel, the gel was either directly used in el
 For electrophoresis, the gel was placed vertically in a chamber containing SDS running buffer. The samples were mixed with 5x reducing loading buffer in a 4:1 ratio and boiled for \SI{5}{\min}. \SI{10}{\micro\litre} sample volume was transferred into the gel pockets, and the marker Color Prestained Protein Standard, Broad Range (10-250 kDa) by New England Biolabs was used as marker. The gel was run at \SI{180}{\volt} for about one hour. 
 
 \subsubsection{Coomassie Staining}
-After completion of the SDS-PAGE, the gels were placed in Coomassie Staining solution for 30 minutes, while being gently swiveled on an orbital stainer. The Coomassie Staining solution was removed, and destaining solution was added to the gel, still being swiveled. The destaining solution was replaced multiple times, before destaining was complete. 
+After completion of the SDS-PAGE, the gels were placed in Coomassie Staining solution for 30 minutes, while being gently swiveled on an orbital shaker. The Coomassie Staining solution was removed, and destaining solution was added to the gel, still being swiveled. The destaining solution was replaced multiple times, before destaining was complete. 
 
 \subsubsection{Western Blot}
 For immunologic detection of specific epitopes on the SDS gel, Western Blotting was conducted. The gel was placed in semi-dry transfer buffer, and eight layers of Whatman paper as well as a nitrocellulose membrane were soaked in semi-dry transfer buffer for \SI{5}{\min}. Then, a stack of four layers of Whatman paper, the nitrocellulose membrane, the gel, and four layers of Whatman paper, was assembled in the blotting chamber of a Trans-Blot\textsuperscript{\textregistered} Turbo\textsuperscript{\texttrademark} machine. Transfer to the membrane took place at a constant voltage of \SI{25}{\volt} and a current of maximally \SI{1}{\ampere}.

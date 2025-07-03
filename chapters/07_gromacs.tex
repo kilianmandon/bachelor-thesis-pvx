@@ -1,0 +1,51 @@
+% Further evaluation through GROMACS: 
+% Physics based evaluation by Cao et al (physics_binder_design)
+% Physics based evaluations generally perform worse than AI for AI designs (binder_design)
+% However, important metric because we used AI off from the tested setup
+% For viruses, All-Atom MD Simulations used widely for structural analysis tasks
+% md_viral_analysis_review
+% in particular md_tmv_stability for assessing stability in absence of RNA
+% similar for us: simulation of a slice with 13 particles, RMSD shift
+% three designs with intermediate structural stability. RFdiffusion samples
+% immediately went really high
+% notably: starting with predicted Wildtype structure, stability can be partly recovered,
+% then similar to the designs
+For further in silico evaluation of the designs, Molecular Dynamics (MD) simulations using GROMACS \cite{gromacs_general} were conducted. Similar physics based evaluations have already been proven to be a suitable metric for assessing the quality of novel binder designs \cite{physics_binder_design}. While physics based metrics tended to be less effective for design evaluation than methods based on AlphaFold \cite{binder_design}, the metric might be particularly viable for the designs created in this work, since the methods of symmetry-guided design (\autoref{ch:rfdiffusion}) and symmetry-guided prediction (\autoref{ch:alphafold}) might introduce a bias for the AI tools. 
+
+For viruses, all-atom MD simulations are widely used for several tasks regarding structural analysis and assembly \cite{md_viral_analysis_review}. In particular, Freddolino et al. were able to analyze structural integrity of Satellite Tobacco Mosaic Virus  (STMV), showing that the capsid becomes unstable in absence of RNA \cite{md_tmv_stability}. This instability was observed as an increase in the RMSD of the viral atoms compared to the initial structure over the course of the simulation. 
+
+A similar trend was observed in this work as well. In MD simulations of a slice of 13 monomers at a temperature of \SI{310}{\kelvin} (also conducted at \SI{300}{\kelvin with similar results}), RMSD for the wild type excluding RNA increased significantly quicker than for the wild type with its genomic RNA included (\autoref{fig:gromacs_rmsd_gyrate}). Three of the artificial designs showed an RMSD development in-between these two, while the designs based on RFdiffusion quickly rose to RMSDs more than twice as large as that of the wild type without RNA (data not shown), likely due to the observed structural violations in the designs. Notably, when running the simulation of the wild type without RNA based on an initial guess by AlphaFold instead of the PDB structure, the RMSD progresses similar to those of the artificial designs.
+
+\begin{figure}
+    \includesvg{modeling/gromacs_joined_rmsd_gyrate_plot.svg}
+    \caption{RMSD and Gyrate Plots}
+    \label{fig:gromacs_rmsd_gyrate}
+\end{figure}
+
+% Further: ddG analysis proved up as a helpful metric for binder design
+% might help here as well: Assessment of binding enthalpy using umbrella sampling and the 
+% WHAM method wham_method
+% free energy of binding estimate of 165 kcal/mol Design A
+% slightly higher than wildtype 160kcal/mol
+% Design B and C lower binding energy estimates of 120 and 115 kcal/mol
+% Predicted wildtype significantly worse here: only 105 kcal/mol
+% High impact by initial conditions
+% not perfect: not conducted in equilibrium, pulling was too strong
+% reason: problems with unraveling, more complex pull coordinates might help
+% Selection of designs: Design A and Design B, Design A both with and without S-Tag, Design B only with S-Tag
+In the context of binder design, another metric that proved to be an effective predictor was the Rosetta ddG estimate of the complex's free binding energy \cite{physics_binder_design}. Similar free energy simulations can also be conducted in GROMACS using Umbrella Sampling and the Weighted Histogram Analysis Method (WHAM) \cite{wham_method}. Here, an estimate of the binding energy is calculated by forcing the proteins apart from each other using a moving potential, then running simulations along intermediate steps of the trajectory. The binding energy can be computed from these simulations through estimating the thermodynamical likelihood $P(x)$ of each distance. Concretely, the potential of mean (the free energy along the pulling coordinate) can be computed as 
+\begin{equation}
+    F(x) = -k_B T \log(P(x)) + C
+\end{equation}
+
+where $k_B$ is the Boltzmann constant, T is the temperature, C is a constant offset, and $P(x)$ is the probability distribution over the distance $x$ between the monomers. The free binding energy is then the difference of the potential of mean force in the unbound and the bound state. 
+
+This calculation of the free binding energy was conducted for the wild type and three of the designs (\autoref{fig:gromacs_pmf}). The free energy estimate for Design A of \SI{165}{\kilo\cal\per\mole} was slightly higher than that of the wild type of \SI{160}{\kilo\cal\per\mole}. Designs B and C were evaluated to lower binding energies of \SI{120}{\kilo\cal\per\mole} and \SI{115}{\kilo\cal\per\mole}. Calculation of the free energy based on the predicted initial structure of the wild type instead of the PDB structure lead to a binding energy of only \SI{105}{\kilo\cal\per\mole}. This is significantly lower than the value based on the PDB structure, even though the two models only have an RMSD of \SI{0.9}{\angstrom}. This suggests a strong dependence of the calculation on the initial state of the system. The free energy calculations were conducted at relatively high pulling rates, which is generally discouraged since it hinders equilibration of the system and estimation of the physically optimal binding trajectory. The high pulling rates were chosen because the proteins tended to unravel in the simulations using lower pulling rates, and the required simulation size for full dissociation would have exceeded the computational resources available for this project. As a result, the estimated binding energies should be interpreted with caution, as they may not fully reflect the true thermodynamic values.
+
+\begin{figure}
+    \includesvg{modeling/gromacs_wham_profile.svg}
+    \caption{Potential of Mean Force}
+    \label{fig:gromacs_pmf}
+\end{figure}
+
+Based on the simulations, designs A and B were chosen for experimental evaluation in the wet lab. As mentioned earlier, the structural design was based on the d29-CP-PVX, since the structure of the flexible tail is not determined. Given the relevance of the N-terminal domain for the wild type structure of PVX \cite{del22_rigid}, both designs were prepended with the N-terminal domain of the wild type. Design B only shares \SI{53}{\percent} sequence identity with PVX-CP. Due to this, anti-PVX antibodies might not bind to this design. Based on experience from the Institute of Molecular Biotechnology, an S-Tag was chosen as an N-terminal marker, because it was known to not hinder assembly of PVX, and because it is detectable by an anti-S-Tag antibody. The three designs chosen for wet lab evaluation are thus S-Tag-A, S-Tag-B, and d29-A, the latter being the sequence of design A without any N-terminal modifications. The protein sequences were codon optimized for use in \emph{Nicotiana tabacum} as a host organisms. The designed protein and DNA sequences are described in \autoref{appendix:synthetic_seqs}.

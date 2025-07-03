@@ -40,9 +40,9 @@ def evaluate_eyfp(filepath, for_powerpoint=False):
         plt.style.use(['science'])
         fontsize=10
         # fontsize=12
-        plt.rcParams.update({
-            "font.size": fontsize,
-        })
+        # plt.rcParams.update({
+            #"font.size": fontsize,
+        # })
         figsize = (5.91, 3.8)
     col_groups, blanks = load_fluorescense_data(filepath)
 
@@ -106,8 +106,8 @@ def evaluate_eyfp(filepath, for_powerpoint=False):
     plt.plot(calibration_conc[reg_slice], calibration_flu_blanked[reg_slice], 'o', label='Calibration points')
     plt.plot(calibration_conc[non_reg_slice], calibration_flu_blanked[non_reg_slice], 'o', label='Calibration points (unused)', color='gray')
     # plt.errorbar(calibration_conc, calibration_flu_blanked, calibration_flu_sd, fmt='x', capsize=5,label='Calibration points')
-    plt.plot(x_range, y_fit, '-', label=f'Linear fit (R²={r_squared:.2f})')
-    plt.xlabel('Concentration (µg/mL)')
+    plt.plot(x_range, y_fit, '-', label=f'Linear fit ($R^2$={r_squared:.2f})')
+    plt.xlabel('Concentration ($\mu$g/mL)')
     plt.ylabel('Fluorescence (blank corrected)')
     plt.gca().set_xlim(left=0)
     plt.gca().set_ylim(bottom=0)
@@ -128,4 +128,4 @@ def evaluate_eyfp(filepath, for_powerpoint=False):
 reg_slice = slice(2, None)
 non_reg_slice = slice(None, 2)
 fit_intercept=False
-evaluate_eyfp('graphics_generation/eyfp_fluorescense/eyfp_fluorescense.xlsx', for_powerpoint=True)
+evaluate_eyfp('graphics_generation/eyfp_fluorescense/eyfp_fluorescense.xlsx', for_powerpoint=False)

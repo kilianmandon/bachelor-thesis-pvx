@@ -21,3 +21,4 @@ silico
 embedder
 indeterministic
 denoiser
+lysate

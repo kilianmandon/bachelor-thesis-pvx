@@ -12,6 +12,7 @@
 \usepackage{amssymb}
 \usepackage{array,ragged2e}
 \usepackage{svg}
+\usepackage{makecell}
 \usepackage{amsthm}
 \usepackage{amsmath}
 \usepackage{tabularx}
@@ -28,6 +29,41 @@
 
 \usepackage{lightalgostyle}
 
+\usepackage{newfloat}
+
+\DeclareFloatingEnvironment[
+    fileext=losf,
+    listname=List of Supplementary Figures,
+    name=Supplementary Figure,
+    placement=htbp,
+    within=none,
+]{suppfigure}
+
+\DeclareFloatingEnvironment[
+    fileext=lost,
+    listname=List of Supplementary Tables,
+    name=Supplementary Table,
+    placement=htbp,
+    within=none,
+]{supptable}
+
+\DeclareFloatingEnvironment[
+    fileext=losa,
+    listname=List of Supplementary Algorithms,
+    name=Supplementary Algorithm,
+    placement=htbp,
+    within=none,
+]{suppalgorithm}
+
+% Set the counter format to use S prefix
+\renewcommand{\thesuppfigure}{S\arabic{suppfigure}}
+\renewcommand{\thesupptable}{S\arabic{supptable}}
+\renewcommand{\thesuppalgorithm}{S\arabic{suppalgorithm}}
+
+% Apply the ruled float style to match algorithm package
+\floatstyle{ruled}
+\restylefloat{suppalgorithm}
+
 \captionsetup{labelfont=bf,tableposition=top}
 
 \graphicspath{ {images/} }
@@ -36,33 +72,13 @@
 \usepackage{biblatex}
 \addbibresource{chapters/bachelor_sources.bib}
 
-\newtheorem{theorem}{Satz}[section]
-\newtheorem{corollary}{Korollar}[theorem]
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{example}[theorem]{Beispiel}
-\theoremstyle{definition}
-\newtheorem{definition}[theorem]{Definition}
-\newtheorem{remark}[theorem]{Bemerkung}
 
 \DeclareSIUnit\angstrom{\text {Å}}
+\DeclareSIUnit\Dalton{\text {Da}}
 \DeclareSIUnit\Molar{M}
 \DeclareSIUnit\enzymeUnit{U}
 
-\DeclareMathOperator{\ip}{ip}
-\DeclareMathOperator{\cpl}{Cpl}
-\newcommand{\cplc}{\cpl_{\operatorname{c}}}
-\newcommand{\cplbc}{\cpl_{\operatorname{bc}}}
-\DeclareMathOperator{\uf}{uf}
-\DeclareMathOperator{\id}{id}
-\DeclareMathOperator{\CFP}{CFP}
-\DeclareMathOperator{\FP}{FP}
-\DeclareMathOperator{\AF}{AF}
-\DeclareMathOperator{\depth}{depth}
-\DeclareMathOperator{\pj}{pj}
-\DeclareMathOperator{\pp}{pp}
-\DeclareMathOperator{\ST}{ST}
-\DeclareMathOperator{\clip}{clip}
+
 \begin{document}
 \begin{titlepage}
     \begin{figure}[t]
@@ -131,6 +147,9 @@
 
 \section{Results}\label{ch:results}
 \input{chapters/10_results}
+
+\section{Discussion}\label{ch:discussion}
+\input{chapters/11_discussion}
 
 \clearpage
 \input{chapters/appendix.tex}

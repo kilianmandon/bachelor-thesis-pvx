@@ -1,0 +1,28 @@
+% Arguments:
+% Usefulness of PVX: 
+%   Delivery of tumor necrosis factor-related apoptosis-inducing ligand (TRAIL) protein using Potato virus X (PVX) nanoparticles for cancer therapy (scaffold for proteins, https://pubs.acs.org/doi/10.1021/acsnano.8b09462)
+%   PVX as a carrier for doxorubicin in cancer therapy, https://doi.org/10.1039/c6nr09099k
+%   Chemical and genetic functionalization of PVX for biomedical applications, established chemical bioconjugation methods, https://doi.org/10.1021/nl9035753
+% Changing RNA behavior:
+%   Packaging of other RNAs into the virus might be helpful, but PVX is picky https://doi.org/10.1016/j.virol.2005.01.018 (but conservation of RNA binding pocket not a big focus)
+%   For CPMV: genome raises biosafety problems, and makes packaging easier https://doi.org/10.3390/ijms24021533
+%   "makes them noninfectious and eliminates a potential uncontrolled immunostimulatory source, rendering VLPs ideal building blocks for immunotherapy", https://pubs.acs.org/doi/10.1021/acs.nanolett.9b00300
+%   large number of VLPs has medical approval https://doi.org/10.1186/s12951-021-00806-7
+% PVX infects Nicotiana tabacum, https://doi.org/10.1111/mpp.13163, making ALiCE a good choice
+% ProteinMPNN and RFdiffusion capable of variable design tasks, particularly symmetric binder design
+% AI-based structure prediction methods helpful for filtering out good designs
+% what we'll do. 
+
+% VLPs are nanostructures lacking viral genetic material https://doi.org/10.3390/v14091905 VLPs are great: Medical Applications (carriers for material like genes, proteins or small drugs, scaffolds for proteins, allow for targeted delivery) https://doi.org/10.1186/s12951-021-00806-7. Due to safety, large number of VLPs has medical approvement (https://doi.org/10.1038/s41423-022-00897-8)
+% PVX is great (see above), but not a VLP since assembly doesnt work (https://doi.org/10.3389/fpls.2019.00158)
+% Computational Design could make it assemble
+% Expression in ALiCE Lysate, since it's from one of its host Nicotiana tabacum, 
+% and can give high yields with very easy setup, and is very fast compared to creation in plants
+
+Virus-like particles (VLPs) are nanostructures assembled from viral protein subunits, but lacking genetic material for replication, and are therefore non-infectious \cite{vlps_def}. Due to their properties, VLPs have a wide number of medical applications. The particles can serve as carriers for genes, proteins, or small drugs, as well as employment as scaffolds for proteins. A particular benefit of their use as carriers is their ability for targeted drug delivery \cite{vlps_review}. Because of their effectiveness as therapeutics and their high biosafety, several VLPs are already clinically approved, such as the Human papilloma virus vaccine Gardasil\textsuperscript{\textregistered} or the Hepatitis B virus vaccine PreHevbrio\textsuperscript{\textregistered} \cite{vlps_clinically_approved}.
+
+Potato Virus X (PVX) is a \emph{Potexvirus} in the family of the \emph{Alphaflexiviridae} and has proven to be a versatile delivery mechanism for a variety of therapeutic agents. It was successfully modified as a carrier for the tumor necrosis factor-related apoptosis-inducing ligand (TRAIL), a protein drug inducing apoptosis in cancer cells \cite{pvx_trail}. Further, PVX nanoparticles were stably associated with doxorubicin, a commonly used chemotherapeutic \cite{pvx_doxorubicin} and, more generally, can be functionalized by standard amine chemistry or "click" chemistry \cite{pvx_chemical_modification}. However, PVX is currently unsuited for use as a VLP since its coat protein fails to assemble in absence of its viral genome \cite{juli_sagt_keine_assembly}.
+
+This shortcoming could be alleviated by modern developments in Computational Protein Design. The Deep Learning based method ProteinMPNN is capable of generating novel sequences to match a certain backbone structure for monomers, heteromers, and also homomers. The sequences are highly soluble and often assemble correctly into a desired oligomeric state \cite{PMPNN2022}. The backbones used by ProteinMPNN can be generated with RFdiffusion, a diffusion-based algorithm capable of creating probable protein backbones to satisfy a variety of conditions, such as scaffolding a fixed motif, binding to a predetermined target, or satisfying a specific geometry \cite{RFdiffusion}. The already high success rate of these tools can be even further enhanced by filtering designs through metrics based on structure prediction tools \cite{physics_binder_design}. All these developments in the field of protein design were created by David Baker's Lab, whose work in "computational protein design" was awarded with the Nobel Prize in Chemistry in 2024. 
+
+In this work, we will describe our efforts to use the aforementioned design tools to realize a modified PVX coat protein that assembles in absence of its viral genome. The designs created through computational methods will be experimentally expressed using the ALiCE\textsuperscript{\textregistered} cell-free expression systems, and analyzed for assembly into VLPs. The ALiCE\textsuperscript{\textregistered} lysate is derived from \emph{Nicotiana tabacum}, a diagnostic host of PVX \cite{pvx_host_tabacum}, rendering the lysate a natural choice for expression. 

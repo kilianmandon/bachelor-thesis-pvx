@@ -1,23 +1,10 @@
-% 
-
-% - PMPNN and RFdiffusion can quickly generate a lot of samples
-% - Often errorneous (search source), need for filtration
-% - paper for binder design suggests use of AF for binder design
-% - Describe their method
-% - Problem: AF2 mostly fails in in doing the predictions on the wildtype already
-% - AF3 does better, but still has a high failure rate 
-% - Idea: For AF3, assistance in diffusion is possible
-% - AF3 diffusion is structured differently. For example: Not 1-variance scaled, protein orientation changes overtime (see figure)
-% - This needs to be considered when symmetryzing the predictions: Frame needs to be tracked
-
-
 Despite outstanding performance of RFdiffusion and ProteinMPNN for de novo protein design, the success rate is often too low for a small-scale experimental evaluation. In experiments by Watson et al. \cite{RFdiffusion}, for the task of symmetric oligomer designs, 87 out of 608 designs showed an oligomerization state consistent with the design models. In light of this, methods for in silico assessment of protein designs were established to improve the chances for successful designs. 
 
 For the task of binder design, Bennett et al. managed to increase the success rate of binder design nearly 10-fold using metrics based on AlphaFold 2 \cite{binder_design}. In their design assays, a low C$\alpha$ RMSD and a low predicted aligned error (pAE) between inter-chain residue pairs was predictive of binder success. Unfortunately, AlphaFold 2 fails to predict the multimeric structure of the wild type. Even using the "AF2 initial guess" method \cite{binder_design} of providing the expected backbone structure to the model through the recycling embedder was unsuccessful in recovering the prediction. 
 
-The recently developed model AlphaFold 3 \cite{af3} performs better on the prediction of the wild type, but still only makes a prediction with C$\alpha$ RMSD of $\SI{5}{\angstrom}$ or less in $\SI{8}{\percent}$ of the evaluations (Figure \ref{fig:af3_rmsd_cdf}). Since AlphaFold 3 is indeterministic, repeated runs  result in different outcomes. However, the architecture for structure prediction in AlphaFold 3 is largely different from AlphaFold 2, replacing the structure module with a diffusion algorithm. As seen in Section \ref{ch:rfdiffusion}, diffusion algorithms allow for changes to the denoising process to guide the prediction, such as a symmetry constraint. 
+The recently developed model AlphaFold 3 \cite{af3} performs better on the prediction of the wild type, but still only makes a prediction with C$\alpha$ RMSD of $\SI{5}{\angstrom}$ or less in $\SI{8}{\percent}$ of the evaluations (\autoref{fig:af3_rmsd_cdf}). Since AlphaFold 3 is indeterministic, repeated runs  result in different outcomes. However, the architecture for structure prediction in AlphaFold 3 is largely different from AlphaFold 2, replacing the structure module with a diffusion algorithm. As seen in \autoref{ch:rfdiffusion}, diffusion algorithms allow for changes to the denoising process to guide the prediction, such as a symmetry constraint. 
 
-While both RFdiffusion and AlphaFold 3 use diffusion, their exact implementations vary, requiring additional considerations when transferring the symmetrization process used in RFdiffusion to AlphaFold 3. In particular, the diffusion trajectories in AlphaFold 3 are not scaled to unit variance and the model changes its position and orientation throughout the process (Figure \ref{fig:af3_sym_traj}). This motion of the model can be tracked by using a reference frame $T_{\text{ref}} = (R_{\text{ref}}, \vec{\mathbf{t}}_{\text{ref}})$ and enforcing the symmetry in that frame as 
+While both RFdiffusion and AlphaFold 3 use diffusion, their exact implementations vary, requiring additional considerations when transferring the symmetrization process used in RFdiffusion to AlphaFold 3. In particular, the diffusion trajectories in AlphaFold 3 are not scaled to unit variance and the model changes its position and orientation throughout the process (\autoref{fig:af3_sym_traj}). This motion of the model can be tracked by using a reference frame $T_{\text{ref}} = (R_{\text{ref}}, \vec{\mathbf{t}}_{\text{ref}})$ and enforcing the symmetry in that frame as 
 \begin{equation}
 \vec{\mathbf{x}}^{(j)} = T_{\text{ref}} \circ T_j \circ T_{\text{ref}}^{-1} \circ \vec{\mathbf{x}}^{(1)}
 \end{equation}
@@ -31,29 +18,38 @@ While both RFdiffusion and AlphaFold 3 use diffusion, their exact implementation
 Motion of the model happens in three stages of the diffusion sampler in AlphaFold 3: First, the function CentreRandomAugmentation recenters the prediction before applying a random rotation and translation to the model. Second, Gaussian noise is added to the model in each iteration, potentially shifting it. Third, the prediction by the denoiser can be shifted, resulting in a translation of the model when applying the denoising step. These motions do not occur in RFdiffusion. Since the algorithm is $\mathrm{SE}(3)$ invariant, it does not require augmentation. No noise is added, and the prediction is aligned to the current model before updating it. 
 
 
-To account for this, the motion by the function CentreRandomAugmentation can be applied to the reference frame $T_\text{ref}$ as well, and shifts to the model can be considered by setting the translation $\vec{\mathbf{t}}_{\text{ref}}$ to the center of the reference monomer in each iteration. Further, the prediction by the denoiser can be shifted to match the center of the current model before applying the symmetry. The details of the implementation are outlined in Algorithm \ref{alg:af3_sym}. In this work, the symmetry constraint was applied to the initial noise and the denoised prediction. Symmetrization of the current model at the start of each iteration, as is done in RFdiffusion, is likely to be similarly effective. The denoised prediction could also lead to a slight rotation of the model over time. This can be considered by rotating the reference frame towards the best alignment of the current model with the expected backbone coordinates. Notably, the atom coordinates in early steps of the diffusion process have a standard deviation that is significantly larger than the translation in the symmetry transforms of PVX. Due to this, symmetrization in AlphaFold 3 does not strongly affect the distribution, as it did for RFdiffusion (Section \ref{ch:rfdiffusion}).
+To account for this, the motion by the function CentreRandomAugmentation can be applied to the reference frame $T_\text{ref}$ as well, and shifts to the model can be considered by setting the translation $\vec{\mathbf{t}}_{\text{ref}}$ to the center of the reference monomer in each iteration. Further, the prediction by the denoiser can be shifted to match the center of the current model before applying the symmetry. The details of the implementation are outlined in \autoref{alg:af3_sym}. In this work, the symmetry constraint was applied to the initial noise and the denoised prediction. Symmetrization of the current model at the start of each iteration, as done in RFdiffusion, is likely to be similarly effective. The denoised prediction could also lead to a slight rotation of the model over time. This can be accounted for by rotating the reference frame towards the best alignment of the current model with the expected backbone coordinates, but has little effect on the accuracy. Notably, the atom coordinates in early steps of the diffusion process have a standard deviation that is significantly larger than the translation in the symmetry transforms of PVX. Due to this, symmetrization in AlphaFold 3 does not strongly affect the point distributions, as it did for RFdiffusion (\autoref{ch:rfdiffusion}).
 
-
-
-
-% - Concrete details: Reference coordinate frame that's updated in the iteration
-% - Symmetry enforcement in reference coordinates, show formula
-% - Motion happens through three sources: CentreRandomAugmentation, addition of noise, and position-shift through the denoising prediction
-% - Can be accounted for: CentreRandomAugmentation: also applied to reference transform. Addition of noise: recentering translational
-% part at start of algorithm. position-shift through denoising: Recenter denoised prediction to match the state of denoising.
-% - Notably: Since for early diffusion timesteps the standard deviation is very large, the translation in the PVX symmetry transforms
-% barely affects the distribution, no change of distribution like in RFdiffusion. 
-% - denoised prediction could also lead to a rotation of the protein overtime, not only a shift. Option: 
-% Expected backbone structure already known (through RFdiffusion generation or Wildtype backbone). In each iteration, align current prediction 
-% of reference monomer with expected coordinates and update R_ref to match that alignment.
-% Results: can recover in msa-based predictions, not so much in msa-free prediction.
-% This adapted AF3 algorithm was used to judge generated sequences based on whether the prediction agrees with the original one.
-% Show which are selected, what's their RMSD, and how many clashes. 
-
-
+The described process of symmetrization during diffusion can in fact often recover the prediction. For a standard AlphaFold pass, including a Multiple Sequence Alignment (MSA) of the query sequence, the symmetry-guided prediction scores an RMSD less than \SI{5}{\angstrom} in \SI{50}{\percent} of the runs, while the original model only reached \SI{5}{\angstrom} in \SI{8}{\percent} of the evaluations (\autoref{fig:af3_rmsd_cdf}). For designs created with RFdiffusion, sequences often have low similarity with sequences from known databases, so there is little to no MSA data available. In the case of MSA-free prediction, symmetrization is unfortunately unable to improve the prediction. This might pose a problem for the RFdiffusion designs. However, the sequences created based on the wild type structure of PVX have sufficient similarity to build meaningful MSAs. 
 
 \begin{figure}
 \includesvg[width=\textwidth]{modeling/af3_rmsd_cdf.svg}
 \caption{Comparison of C$\alpha$ RMSD of AlphaFold 3 on PVX using different variants of the algorithm. }
 \label{fig:af3_rmsd_cdf}
 \end{figure}
+
+Using AlphaFold with symmetrization and the described tracking of the symmetry reference frame to the expected orientation, all sequences generated in \autoref{ch:pmpnn} and \autoref{ch:rfdiffusion} were evaluated based on the C$\alpha$-RMSD between their designed backbone and the AlphaFold prediction. The designs from partial diffusion in \autoref{ch:rfdiffusion} all resulted in high RMSDs larger than \SI{15}{\angstrom} and were not further analyzed. Two of the RFdiffusion designs and three of the pure ProteinMPNN designs were chosen for investigation with GROMACS, the choice being based on their low RMSD score (\autoref{tab:design_rmsd}). While the pure ProteinMPNN designs show little amount of structural violations, the RFdiffusion designs have a substantial number of interchain and intrachain clashes, as computed with ChimeraX. Aside of its role in filtering the sequence designs, the AlphaFold prediction was also used as the initial structure for the GROMACS simulations in \autoref{ch:gromacs}.
+
+
+\begin{table}[h]
+    \centering
+    \caption{Comparison of designs from different sources}
+    \label{tab:design_rmsd}
+    \begin{tabular}{
+        l
+        >{\raggedright\arraybackslash}p{2.8cm}
+        c
+        >{\centering\arraybackslash}p{2.5cm}
+        >{\centering\arraybackslash}p{2cm}
+    }
+    \toprule
+    \textbf{Design} & \textbf{Source} & \textbf{RMSD} & \textbf{Clashes (intra|inter)} & \textbf{Sequence Identity} \\
+    \midrule
+    Design A & WT P-MPNN\newline Bias 2 & 0.97 & (1|4) & 90\% \\
+    Design B & WT P-MPNN\newline Bias 0 & 0.67 & (1|4) & 53\% \\
+    Design C & WT P-MPNN\newline Bias 2.5 & 0.75 & (2|4) & 92\% \\
+    Design D & RFdiffusion\newline & 3.74 & (216|1012) & 8\% \\
+    Design E & RFdiffusion & 2.94 & (504|3148) & 10\% \\
+    \bottomrule
+    \end{tabular}
+    \end{table}

@@ -1,9 +1,23 @@
 \appendix
 
-\section*{Appendix A: Supplementary Tables}
-\addcontentsline{toc}{section}{Appendix A: Supplementary Tables}
+\section*{Appendix A: Supplementary Figures}
+\addcontentsline{toc}{section}{Appendix A: Supplementary Figures}
+\begin{suppfigure}
+\includesvg[width=\textwidth]{lab/fluorescense_intensity.svg}
+\caption{\textbf{Calibration curve for eYFP measurement.}}
+\label{fig:calibration_eyfp}
+\end{suppfigure}
 
-\begin{table}[ht]
+\begin{suppfigure}
+\includesvg[width=\textwidth]{lab/elisa_calibration.svg}
+\caption{\textbf{Calibration curve for ELISA using anti-PVX and anti-S-Tag antibodies}}
+\label{fig:elisa_calib}
+\end{suppfigure}
+
+\section*{Appendix B: Supplementary Tables}
+\addcontentsline{toc}{section}{Appendix B: Supplementary Tables}
+
+\begin{supptable}[ht]
     \centering
     \caption{Calibration data for eYFP standard}
     \begin{tabular}{S[table-format=3.1] S[table-format=5.0(4), uncertainty-mode=separate]}
@@ -18,11 +32,12 @@
     2.5   & 405(18) \\
     \bottomrule
     \end{tabular}
-\end{table}
+\end{supptable}
 
-\begin{table}[ht]
+\begin{supptable}[ht]
     \centering
     \caption{Measured fluorescence and estimated eYFP concentrations for Strep-eYFP (ALiCE) and Non-template (ALiCE)}
+    \label{fig:sample_values_eyfp}
     \begin{tabular}{
         l
         S[table-format=4.0(2),uncertainty-mode = separate]
@@ -48,11 +63,12 @@
     1:500  & -1(1)      & 0.00(0.00) & -1(0.8) \\
     \bottomrule
     \end{tabular}
-\end{table}
+\end{supptable}
 
-\begin{table}[ht]
+\begin{supptable}[ht]
     \centering
     \caption{Calibration data for anti-PVX and anti-S-Tag ELISAs}
+    \label{tab:calibration_data_elisa}
     \begin{tabular}{
         S[table-format=4.0]
         S[table-format=1.3(3),uncertainty-mode=separate]
@@ -73,11 +89,12 @@
     10   & 0.105(0.026) & 0.009(0.018) \\
     \bottomrule
     \end{tabular}
-\end{table}
+\end{supptable}
 
-\begin{table}[ht]
+\begin{supptable}[ht]
     \centering
     \caption{Estimated concentrations from anti-PVX ELISA}
+    \label{tab:sample_values_elisa_anti_pvx}
     \begin{tabular}{
         l
         S[table-format=1.3(2),uncertainty-mode=separate]
@@ -105,11 +122,12 @@
     1:1000 & 0.012(0.040) & 1.9(6.2) \\
     \bottomrule
     \end{tabular}
-\end{table}
+\end{supptable}
 
-\begin{table}[ht]
+\begin{supptable}[ht]
     \centering
     \caption{Estimated concentrations from anti-S-Tag ELISA}
+    \label{tab:sample_values_elisa_anti_s_tag}
     \begin{tabular}{
         l
         S[table-format=1.3(2),uncertainty-mode=separate]
@@ -137,9 +155,9 @@
     1:1000 & 0.036(0.019) & 38(21) \\
     \bottomrule
     \end{tabular}
-\end{table}
+\end{supptable}
 
-%\begin{table}[ht]
+%\begin{supptable}[ht]
 %    \centering
 %    \caption{Estimated concentrations from anti-PVX ELISA}
 %    \begin{tabular}{
@@ -171,9 +189,9 @@
 %    1:1000 & 0.012(0.040) & 1.89(6.22) & 1.89(6.22) \\
 %    \bottomrule
 %    \end{tabular}
-%\end{table}
+%\end{supptable}
 
-%\begin{table}[ht]
+%\begin{supptable}[ht]
     %\centering
     %\caption{Estimated concentrations from anti-S-Tag ELISA}
     %\begin{tabular}{
@@ -205,11 +223,11 @@
     %1:1000 & 0.036(0.019) & 39(21) & 38(21) \\
     %\bottomrule
     %\end{tabular}
-%\end{table}
+%\end{supptable}
 
 \section*{Appendix B: Algorithms}
 \addcontentsline{toc}{section}{Appendix B: Algorithms}
-\begin{algorithm}
+\begin{suppalgorithm}
      \caption{Sample Diffusion}
      {\small
      \begin{algorithmic}[1]
@@ -229,10 +247,10 @@
          \State \textbf{return} $\{\vec{\mathbf{x}}_l\}$
          \end{algorithmic}
      }
-\end{algorithm}
+\end{suppalgorithm}
 
-\begin{algorithm}
-    \caption{Sample Diffusion\algHighlight{ with Symmetrization for Multimeric Complexes}}
+\begin{suppalgorithm}
+    \caption{Sample Diffusion\algHighlight{ with Symmetrization}}
     {\small
     \begin{algorithmic}[1]
         \AlgFunctionDef{SampleDiffusion}{$\{\mathbf{f}^*\}$, $\{\mathbf{s}_i^{\text{inputs}}\}$, $\{\mathbf{s}_i^{\text{trunk}}\}$, $\{\mathbf{z}_{ij}^{\text{trunk}}\}$, Noise Schedule $[c_0, c_1, \ldots, c_T]$, $\gamma_0 = 0.8$, $\gamma_{\min} = 1.0$, noise scale $\lambda = 1.003$, step scale $\eta = 1.5$, \algHighlight{Monomer Transforms $\{T_j\}$}}
@@ -267,7 +285,7 @@
         \end{algorithmic}
     }
     \label{alg:af3_sym}
-\end{algorithm}
+\end{suppalgorithm}
 \section*{Appendix C: Synthetic Sequences}\label{appendix:synthetic_seqs}
 \addcontentsline{toc}{section}{Appendix C: Synthetic Sequences}
 \subsection*{C.1: Construct A - Protein Sequence (Designed)}
