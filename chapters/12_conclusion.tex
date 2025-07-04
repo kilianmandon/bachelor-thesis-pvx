@@ -1,0 +1,24 @@
+% Successful expression
+% designs with PMPNN and filtered through AlphaFold performed well in silico evaluation using GROMACS
+% designs d29Orange and S-Tag Orange showed response to anti-PVX, indicating 
+%   correct fold
+% no real particles to see, S-Tag-B would need to be validated by immunoelectron microscopy
+% missing assembly not too surprising: 608 designs for experimental characterization and found using size-exclusion chromatography (SEC) that at least 87 had oligomerization states closely consistent with the design models  (RFdiffusion)
+% AI has opened the doors for Protein design, but with current models, much testing necessary
+% this could be helpful here, but without RFdiffusion, low diversity in sample generation
+% if fixed (possibly through fixing the improper distribution), could enable larger scale design evaluation
+% ALiCE lysate helpful for creating large number of designs
+% an intermediate number, like a few hundred designs, could be reasonably assessed with current methods
+% Might be helpful to try out Baker protocols from RFdiffusion, which can be conducted in 96 well plates
+% All in all: Work proposed new methods for design and evaluation for a new task of symmetry fulfillment. Designs showed in silico success, but experimental evaluation wasn't affirmative
+% If diversity of designs can be increased, higher-throughput methods could shed light on this.
+
+This work introduced novel computational methods to design and evaluate proteins tailored to a specific geometric architecture. The design and filtering process, using modified implementations of ProteinMPNN and AlphaFold 3, showed promising results at in silico evaluations using GROMACS. Protein expression of the constructs could be confirmed. Notably, binding of anti-PVX against the designed coat proteins, even with a faint signal for the construct S-Tag-B that shares only \SI{53}{\percent} sequence identity to the wildtype, could imply partially correct folding of the sequence to the desired monomer structure. 
+
+Despite this, assembly of the particles could not be confirmed through size exclusion chromatography and transmission electron microscopy. Nonetheless, failure to observe particle assembly does not necessarily preclude the utility of the methods employed. In similar assays for design of symmetric homooligomers carried out by Watson et al., only 87 out of 608 designs showed the desired oligomerization state \cite{RFdiffusion}. While modern AI models for protein design allowed for design campaigns that were previously impossible, currently available models have success rates that still require a larger number of designs to fulfill the desired fold. 
+
+The primary limitation for scaling up the current design methods is that RFdiffusion failed to generate novel backbone structures for the geometry. Sole use of ProteinMPNN strongly limits the diversity of the designs, making a success by simple upscaling unlikely. The success of RFdiffusion in symmetric design for point group symmetries makes it plausible that use for other symmetries is possible. Failure by the method used here could be due to the strong effect of translation on the distribution in early stages of the diffusion process. This could be mitigated by gradually increasing the translational symmetry over the course of the denoising process, similar to how the symmetry enforcement effects diffusion in AlphaFold 3.
+
+If a higher diversity of designs can be achieved, an increase in the number of experimental evaluations could be able to find a suitable protein. The experimental methods used in this paper could realistically accommodate 50 to 100 designs. The cell-free expression system in particular allows for simple and fast protein expression. Another noteworthy option are the protocols that were successfully employed for the evaluation of symmetric homooligomeric designs by RFdiffusion \cite{RFdiffusion}. These allow for plasmid assembly, transformation, expression, and purification in microplates, as well as employment of automated size exclusion chromatography for evaluation of the oligomeric state. Using these protocols, experimental evaluation could be carried out with a considerably higher throughput. 
+
+Overall, while the computational methods proposed in this work did not lead to the desired assembly into particles, the partial success of the designs demonstrates their potential. With modifications to the design process and an increased focus on high-throughput evaluation, AI-driven methods may yet enable the construction of functional PVX VLPs.

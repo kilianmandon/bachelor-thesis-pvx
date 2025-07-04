@@ -1,0 +1,563 @@
+Despite outstanding performance of RFdiffusion and ProteinMPNN for de novo protein design, the success rate is often too low for a small-scale experimental evaluation. In experiments by Watson et al. \cite{RFdiffusion}, for the task of symmetric oligomer designs, 87 out of 608 designs showed an oligomerization state consistent with the design models. In light of this, methods for in silico assessment of protein designs were established to improve the chances for successful designs. 
+
+For the task of binder design, Bennett et al. managed to increase the success rate of binder design nearly 10-fold using metrics based on AlphaFold 2 \cite{binder_design}. In their design assays, a low C$\alpha$-RMSD and a low predicted aligned error (pAE) between inter-chain residue pairs was predictive of binder success. Unfortunately, AlphaFold 2 fails to predict the multimeric structure of the wild type. Even using the ``AF2 initial guess'' method \cite{binder_design} of providing the expected backbone structure to the model through the recycling embedder was unsuccessful in recovering the prediction. 
+
+The recently developed model AlphaFold 3 \cite{af3} performs better on the prediction of the wild type, but still only makes a prediction with C$\alpha$-RMSD of $\SI{5}{\angstrom}$ or less in $\SI{8}{\percent}$ of the evaluations (\autoref{fig:af3_rmsd_cdf}). Since AlphaFold 3 is indeterministic, repeated runs  result in different outcomes. However, the architecture for structure prediction in AlphaFold 3 is largely different from AlphaFold 2, replacing the structure module with a diffusion algorithm. As seen in \autoref{ch:rfdiffusion}, diffusion algorithms allow for changes to the denoising process to guide the prediction, such as a symmetry constraint. 
+
+While both RFdiffusion and AlphaFold 3 use diffusion, their exact implementations vary, requiring additional considerations when transferring the symmetrization process used in RFdiffusion to AlphaFold 3. In particular, the diffusion trajectories in AlphaFold 3 are not scaled to unit variance and the model changes its position and orientation throughout the process (\autoref{fig:af3_sym_traj}). This motion of the model can be tracked by using a reference frame $T_{\text{ref}} = (R_{\text{ref}}, \vec{\mathbf{t}}_{\text{ref}})$ and enforcing the symmetry in that frame as 
+\begin{equation}
+\vec{\mathbf{x}}^{(j)} = T_{\text{ref}} \circ T_j \circ T_{\text{ref}}^{-1} \circ \vec{\mathbf{x}}^{(1)}
+\end{equation}
+
+\begin{figure}[!htb]
+\includesvg[width=\textwidth]{modeling/af3_traj_basic.svg}
+\caption{\textbf{Diffusion Trajectories of AlphaFold3 with symmetry enforcement. } Symmetry enforcement was performed as shown in \autoref{alg:af3_sym}. For the scaled and aligned trajectory, coordinates at each time step where scaled based on their standard deviation, and the coordinates were expressed relative to the reference frame used for symmetrization (\autoref{alg:af3_sym}). Due to the high standard deviation at early denoising steps, the translation of the distribution through symmetrization is barely notable, compared to the trajectories for RFdiffusion (\autoref{fig:rfdiff_sym_trajectories}).}
+\label{fig:af3_sym_traj}
+\end{figure}
+
+Motion of the model happens in three stages of the diffusion sampler in AlphaFold 3: First, the function CentreRandomAugmentation recenters the prediction before applying a random rotation and translation to the model. Second, Gaussian noise is added to the model in each iteration, potentially shifting it. Third, the prediction by the denoiser can be shifted, resulting in a translation of the model when applying the denoising step. These motions do not occur in RFdiffusion. Since the algorithm is $\mathrm{SE}(3)$ invariant, it does not require augmentation. No noise is added, and the prediction is aligned to the current model before updating it. 
+
+
+To account for this, the motion by the function CentreRandomAugmentation can be applied to the reference frame $T_\text{ref}$ as well, and shifts to the model can be considered by setting the translation $\vec{\mathbf{t}}_{\text{ref}}$ to the center of the reference monomer in each iteration. Further, the prediction by the denoiser can be shifted to match the center of the current model before applying the symmetry. The details of the implementation are outlined in \autoref{alg:af3_sym}. In this work, the symmetry constraint was applied to the initial noise and the denoised prediction. Symmetrization of the current model at the start of each iteration, as done in RFdiffusion, is likely to be similarly effective. The denoised prediction could also lead to a slight rotation of the model over time. This can be accounted for by rotating the reference frame towards the best alignment of the current model with the expected backbone coordinates, but has little effect on the accuracy. Notably, the atom coordinates in early steps of the diffusion process have a standard deviation that is significantly larger than the translation in the symmetry transforms of PVX. Due to this, symmetrization in AlphaFold 3 does not strongly affect the point distributions, as it did for RFdiffusion (\autoref{ch:rfdiffusion}).
+
+The described process of symmetrization during diffusion can in fact often recover the prediction. For a standard AlphaFold pass, including a Multiple Sequence Alignment (MSA) of the query sequence, the symmetry-guided prediction scores an RMSD less than \SI{5}{\angstrom} in \SI{50}{\percent} of the runs, while the original model only reached \SI{5}{\angstrom} in \SI{8}{\percent} of the evaluations (\autoref{fig:af3_rmsd_cdf}). For designs created with RFdiffusion, sequences often have low similarity with sequences from known databases, so there is little to no MSA data available. In the case of MSA-free prediction, symmetrization is unfortunately unable to improve the prediction. This might pose a problem for the RFdiffusion designs. However, the sequences created based on the wild type structure of PVX have sufficient similarity to build meaningful MSAs. 
+
+Aside of its use in recovering failed predictions for design evaluation as shown here, the symmetry-guided prediction process developed in this thesis might also prove helpful for enhancing structure prediction of protein complexes with structural data already available at low-resolution. Having said that, this use-case was not tested, and the symmetrized structure prediction might have worked exceptionally well in this case because AlphaFold is particularly good at inferring the monomer structure on its own.
+
+\begin{figure}
+\includesvg[width=\textwidth]{modeling/af3_rmsd_cdf.svg}
+\caption{\textbf{Comparison of C$\alpha$-RMSD of AlphaFold 3 on PVX using different variants of the algorithm. } The RMSD distribution for each model was calculated based on 50 runs with the same input. Plotted are the cumulative distribution functions based on those distributions. $\pm\text{MSA}$ indicates the presence or absence of a multiple sequence alignment in the input. $\pm\text{Sym}$ denotes whether symmetry enforcement was conducted. $\pm\text{Ori}$ indicates whether the symmetry reference frame was set to explicitly match the orientation in the expected output. The AlphaFold 2 baseline was created using AlphaFold 2 with the ``AF2 initial guess'' method \cite{binder_design}. } 
+\label{fig:af3_rmsd_cdf}
+\end{figure}
+
+Using AlphaFold with symmetrization and the described tracking of the symmetry reference frame to the expected orientation, all sequences generated in \autoref{ch:pmpnn} and \autoref{ch:rfdiffusion} were evaluated based on the C$\alpha$-RMSD between their designed backbone and the AlphaFold prediction. The designs from partial diffusion in \autoref{ch:rfdiffusion} all resulted in high RMSDs larger than \SI{15}{\angstrom} and were not further analyzed. Two of the RFdiffusion designs and three of the pure ProteinMPNN designs were chosen for investigation with GROMACS, the choice being based on their low RMSD score (\autoref{tab:design_rmsd}). While the pure ProteinMPNN designs show little amount of structural violations, the RFdiffusion designs have a substantial number of interchain and intrachain clashes, as computed with ChimeraX \cite{ChimeraX2023}. Aside of its role in filtering the sequence designs, the AlphaFold prediction was also used as the initial structure for the GROMACS simulations in \autoref{ch:gromacs}.
+
+
+\begin{table}[h]
+    \centering
+    \caption{\textbf{Designs selected for further evaluation with GROMACS. } Shown are the name assigned to the design, the algorithm setup used to produce it, the C$\alpha$-RMSD between its AlphaFold prediction and its expected backbone (either the wild type PVX backbone for pure ProteinMPNN generation or the backbone generated by RFdiffusion), the number of intrachain and interchain clashes in the predicted structure (as computed with ChimeraX), and the sequence identity to the wild type PVX CP. The design source RFdiffusion implies a backbone generated by RFdiffusion, followed by a sequence design using ProteinMPNN without bias. }
+    \label{tab:design_rmsd}
+    \begin{tabular}{
+        l
+        >{\raggedright\arraybackslash}p{2.8cm}
+        c
+        >{\centering\arraybackslash}p{2.5cm}
+        >{\centering\arraybackslash}p{2cm}
+    }
+    \toprule
+    \textbf{Design} & \textbf{Source} & \textbf{RMSD} & \textbf{Clashes (intra|inter)} & \textbf{Sequence Identity} \\
+    \midrule
+    Design A & WT P-MPNN\newline Bias 2 & 0.97 & (1|4) & 90\% \\
+    Design B & WT P-MPNN\newline Bias 0 & 0.67 & (1|4) & 53\% \\
+    Design C & WT P-MPNN\newline Bias 2.5 & 0.75 & (2|4) & 92\% \\
+    Design D & RFdiffusion\newline & 3.74 & (216|1012) & 8\% \\
+    Design E & RFdiffusion & 2.94 & (504|3148) & 10\% \\
+    \bottomrule
+    \end{tabular}
+    \end{table}
+    % Further evaluation through GROMACS: 
+% Physics based evaluation by Cao et al (physics_binder_design)
+% Physics based evaluations generally perform worse than AI for AI designs (binder_design)
+% However, important metric because we used AI off from the tested setup
+% For viruses, all-atom MD Simulations used widely for structural analysis tasks
+% md_viral_analysis_review
+% in particular md_tmv_stability for assessing stability in absence of RNA
+% similar for us: simulation of a slice with 13 particles, RMSD shift
+% three designs with intermediate structural stability. RFdiffusion samples
+% immediately went really high
+% notably: starting with predicted Wildtype structure, stability can be partly recovered,
+% then similar to the designs
+For further in silico evaluation of the designs, Molecular Dynamics (MD) simulations using GROMACS \cite{gromacs_general} were conducted. Similar physics based evaluations have already been proven to be a suitable metric for assessing the quality of novel binder designs \cite{physics_binder_design}. While physics based metrics tended to be less effective for design evaluation than methods based on AlphaFold \cite{binder_design}, the metric might be particularly viable for the designs created in this work, since the methods of symmetry-guided design (\autoref{ch:rfdiffusion}) and symmetry-guided prediction (\autoref{ch:alphafold}) might introduce a bias for the AI tools. 
+
+For viruses, all-atom MD simulations are widely used for several tasks regarding structural analysis and assembly \cite{md_viral_analysis_review}. In particular, Freddolino et al. were able to analyze structural integrity of Satellite Tobacco Mosaic Virus  (STMV), showing that the capsid becomes unstable in absence of RNA \cite{md_tmv_stability}. This instability was observed as an increase in the RMSD of the viral atoms compared to the initial structure over the course of the simulation. 
+
+A similar trend was observed in this work as well. In MD simulations of a slice of 13 monomers at a temperature of \SI{310}{\kelvin} (also conducted at \SI{300}{\kelvin with similar results}), RMSD for the wild type excluding RNA increased significantly quicker than for the wild type with its genomic RNA included (\autoref{fig:gromacs_rmsd_gyrate}). Three of the artificial designs showed an RMSD development in-between these two, while the designs based on RFdiffusion quickly rose to RMSDs more than twice as large as that of the wild type without RNA (data not shown), likely due to the observed structural violations in the designs. Notably, when running the simulation of the wild type without RNA based on an initial guess by AlphaFold instead of the PDB structure, the RMSD progresses similar to those of the artificial designs.
+
+\begin{figure}
+    \includesvg{modeling/gromacs_joined_rmsd_gyrate_plot.svg}
+    \caption{\textbf{Evolution of RMSD from the initial structure throughout a GROMACS simulation. } The Designs A, B, and C were generated with ProteinMPNN based on the wild type PVX CP structure with varying bias towards the wild type sequence. The predicted wild type structure was selected similar to the designs, as the prediction closest to the wild type in C$\alpha$-RMSD out of five symmetry-enforced AlphaFold predictions. The lines indicate the RMSD after smoothing with a Savitzky-Golay filter with a windowsize of \SI{0.5}{\nano\second}, while the colored areas show the running standard deviation over that window. The RMSD of the RFdiffusion designs was significantly larger and is not shown. }
+    \label{fig:gromacs_rmsd_gyrate}
+\end{figure}
+
+% Further: ddG analysis proved up as a helpful metric for binder design
+% might help here as well: Assessment of binding enthalpy using umbrella sampling and the 
+% WHAM method wham_method
+% free energy of binding estimate of 165 kcal/mol Design A
+% slightly higher than wildtype 160kcal/mol
+% Design B and C lower binding energy estimates of 120 and 115 kcal/mol
+% Predicted wildtype significantly worse here: only 105 kcal/mol
+% High impact by initial conditions
+% not perfect: not conducted in equilibrium, pulling was too strong
+% reason: problems with unraveling, more complex pull coordinates might help
+% Selection of designs: Design A and Design B, Design A both with and without S-Tag, Design B only with S-Tag
+In the context of binder design, another metric that proved to be an effective predictor was the Rosetta ddG estimate of the complex's free binding energy \cite{physics_binder_design}. Similar free energy simulations can also be conducted in GROMACS using Umbrella Sampling and the Weighted Histogram Analysis Method (WHAM) \cite{wham_method}. Here, an estimate of the binding energy is calculated by forcing the proteins apart from each other using a moving potential, then running simulations along intermediate steps of the trajectory. The binding energy can be computed from these simulations through estimating the thermodynamical likelihood $P(x)$ of each distance. Concretely, the potential of mean (the free energy along the pulling coordinate) can be computed as 
+\begin{equation}
+    F(x) = -k_B T \log(P(x)) + C
+\end{equation}
+
+where $k_B$ is the Boltzmann constant, T is the temperature, C is a constant offset, and $P(x)$ is the probability distribution over the distance $x$ between the monomers. The free binding energy is then the difference of the potential of mean force in the unbound and the bound state. 
+
+This calculation of the free binding energy was conducted for the wild type and three of the designs (\autoref{fig:gromacs_pmf}). The free energy estimate for Design A of \SI{165}{\kilo\cal\per\mole} was slightly higher than that of the wild type of \SI{160}{\kilo\cal\per\mole}. Designs B and C were evaluated to lower binding energies of \SI{120}{\kilo\cal\per\mole} and \SI{115}{\kilo\cal\per\mole}. Calculation of the free energy based on the predicted initial structure of the wild type instead of the PDB structure lead to a binding energy of only \SI{105}{\kilo\cal\per\mole}. This is significantly lower than the value based on the PDB structure, even though the two models only have an RMSD of \SI{0.9}{\angstrom}. This suggests a strong dependence of the calculation on the initial state of the system. The computed binding energies are comparable in magnitude to a reported \SI[separate-uncertainty=true]{-144.9(4.9)}{\kilo\cal\per\mole} dimerization energy for the coat proteins of Cowpea Chlorotic Mottle Virus \cite{ccmv_binding_energy}. The free energy calculations were conducted at relatively high pulling rates, which is generally discouraged since it can create unrealistic dissociation pathways that hinder PMF estimation \cite{lemkul_umbrella_sampling}, \cite{umbrella_sampling_problems}. The high pulling rates were chosen because the proteins tended to unravel in the simulations using lower pulling rates, and the required simulation size for full dissociation would have exceeded the computational resources available for this project. As a result, the estimated binding energies should be interpreted with caution, as they may not fully reflect the true thermodynamic values.
+
+\begin{figure}
+    \includesvg{modeling/gromacs_wham_profile.svg}
+    \caption{\textbf{Estimated Potential of Mean Force along the dissociation coordinate} of homodimers for the ProteinMPNN designs A, B, and C, as well as the wild type structure from the PDB and the predicted wild type structure. The PMF was calculated using Umbrella Sampling and the WHAM method. The simulations were conducted with high pulling rates, which can negatively impact the results. }
+    \label{fig:gromacs_pmf}
+\end{figure}
+
+Based on the simulations, designs A and B were chosen for experimental evaluation in the wet lab. As mentioned earlier, the structural design was based on the d29-PVX-CP, since the structure of the flexible tail is not determined. Given the relevance of the N-terminal domain for the wild type structure of PVX \cite{del22_rigid}, both designs were prepended with the N-terminal domain of the wild type. Design B only shares \SI{53}{\percent} sequence identity with the PVX CP. Due to this, anti-PVX antibodies might not bind to this design. Based on experience from the Institute of Molecular Biotechnology, an S-Tag was chosen as an N-terminal marker, because it was known to not hinder assembly of PVX, and because it is detectable by an anti-S-Tag antibody. The three designs chosen for wet lab evaluation are thus S-Tag-A, S-Tag-B, and d29-A, the latter being the sequence of design A without any N-terminal modifications. The protein sequences were codon optimized for use in \emph{Nicotiana tabacum} as a host organisms. The designed protein and DNA sequences are described in \autoref{appendix:synthetic_seqs}.
+\newcolumntype{L}[1]{>{\RaggedRight}p{#1}}
+\newcolumntype{M}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{P}[1]{>{\hspace{0pt}}p{#1}}
+
+\subsection{Laboratory Equipment}
+All equipment used for the experiments is described in \autoref{tab:lab_equipment}
+{\small
+\begin{longtable}{@{}L{3cm}L{5cm}L{5cm}@{}}
+    \caption{\textbf{Utilized laboratory equipment}. Listed are the equipment category, the specific devices used, and the manufacturers. }\label{tab:lab_equipment}\\
+    \toprule
+    \textbf{Equipment} & \textbf{Type} & \textbf{Manufacturer} \\
+    \midrule
+    \endfirsthead
+    
+    \toprule
+    \textbf{Equipment} & \textbf{Type} & \textbf{Manufacturer} \\
+    \midrule
+    \endhead
+    
+    Autoclave & Systec DE-45 & Systec GmbH, Linden, Germany \\
+              & Systec VX-150 & Systec GmbH, Linden, Germany \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    %Camera & Nikon Coolpix 5400 Digital Camera & Nikon, Tokyo, Japan \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Centrifuge & Beckman Allegra® X-15R & Beckman Coulter, Brea, CA, USA \\
+               & Beckman Avanti™ J-30 I & Beckman Coulter, Brea, CA, USA \\
+               & Beckman Avanti™ J-E & Beckman Coulter, Brea, CA, USA \\
+               & Eppendorf Centrifuge 5424 R & Eppendorf, Hamburg, Germany \\
+               & Eppendorf Centrifuge 5425 & Eppendorf, Hamburg, Germany \\
+               & Eppendorf Concentrator 5301 & Eppendorf, Hamburg, Germany \\
+               & IKA™ Mini-Zentrifuge, 2000~G & IKA, Staufen, Germany \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    %Cold light source & KL 2500~LCD & Schott AG, Mainz, Germany \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    %Electroporator & Eppendorf Multiporator® & Eppendorf, Hamburg, Germany \\
+                   %& Eppendorf Eporator® & Eppendorf, Hamburg, Germany \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Gel power supply & BioRad PowerPac Basic & Hercules, CA, USA \\
+                     & BioRad PowerPac HC & Hercules, CA, USA \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Gel documentation & Herolab E.A.S.Y. 440~K & Herolab, Wiesloch, Germany \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Heating plates / stirrers & Heidolph MR 3001~K & Merck, Darmstadt, Germany \\
+                            & IKA Combimag-RET & IKA, Staufen, Germany \\
+                            & IKA KMO 2 basic & IKA, Staufen, Germany \\
+                            & IKA RCT basic & IKA, Staufen, Germany \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Heating block & Thermomixer C & Eppendorf, Hamburg, Germany \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Incubator / shaker & Heraeus B12 incubator & Thermo Fisher Scientific, Waltham, MA, USA \\
+                     & Lab-Therm LT-X & Kuhner, Birsfelden, Switzerland \\
+                     & GFL 3017 & GFL GmbH, Burgwedel, Germany \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Microplate reader & Tecan Infinite®~M200 & Tecan, Männedorf, Switzerland \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    %Microscope & Olympus®~IX51 & Evident Life Sciences; Shinjuku, Tokyo, Japan \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Refrigerator / freezer & Bosch Economic & Robert Bosch GmbH, Stuttgart, Germany \\
+                         & HERAfreeze HFU~586 Basic & Thermo Fisher Scientific, Waltham, MA, USA \\
+                         & HERAfreeze HFU~686 Basic & Thermo Fisher Scientific, Waltham, MA, USA \\
+                         & Liebherr Comfort & Liebherr-International, Bulle, Switzerland \\
+                         & Siemens electronic KG36E04 & Siemens AG, München, Germany \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    PCR-cycler & Primus 25 advanced Thermocycler & VWR International, Radnor, PA, USA \\
+               & Primus 96 plus Thermal Cycler & Eurofins Scientific, Luxemburg \\
+               & Mastercycler nexus gradient & Eppendorf, Hamburg, Germany \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    pH electrode & HI2211 Basic pH & Hanna Instruments Deutschland, Vöhringen, Germany \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Photometer & BioPhotometer D30 & Eppendorf, Hamburg, Germany \\
+               & NanoDrop™ OneC & Thermo Fisher Scientific, Waltham, MA, USA \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Safety cabinet & Heraeus HS9 & Thermo Fisher Scientific, Waltham, MA, USA \\
+                    & Heraeus HS12 & Thermo Fisher Scientific, Waltham, MA, USA \\
+                    & Heraeus HS18 & Thermo Fisher Scientific, Waltham, MA, USA \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Scale & Kern PCB~2500-2 & Kern~\&~Sohn, Balingen, Germany \\
+          & Sartorius BP121S & Sartorius, Göttingen, Germany \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Semi-dry transfer system & Trans-Blot®~Turbo™ & BioRad, Hercules, CA, USA \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Speed-vacuumator & Eppendorf Concentrator~5301 & Eppendorf, Hamburg, Germany \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Transmission electron microscope & Hitachi HT~7800 & Carl Zeiss AG, Oberkochen, Germany (performed at Institute for Pathology, Uniklinik RWTH Aachen, Germany) \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    %Ultracentrifuge & Beckman Optima™ XPN-80 ultracentrifuge & Beckman Coulter, Brea, CA, USA \\
+                    %& SW~41 Ti rotor & Beckman Coulter, Brea, CA, USA \\
+                    %& SW~32 Ti rotor & Beckman Coulter, Brea, CA, USA \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Ultrapure water system & Sartorius arium pro & Sartorius, Göttingen, Germany \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    UV-transilluminator & Herolab UVT-20~M & Thermo Fisher Scientific, Waltham, MA, USA \\\specialrule{0pt}{0.5ex}{0.5ex}
+    
+    Vortex & Vortex-Genie~2 & Scientific Industries, New York, USA \\
+    \bottomrule
+\end{longtable}
+}
+
+\subsection{Chemicals}
+All chemicals with a purity of at least p.a. grade were obtained from the following suppliers:
+Dianova (Hamburg, Germany), Eurofins Genomics (Ebersberg, Germany), GeneTex (Irvine,
+Ca, USA), Merck (Darmstadt, Germany), New England Biolabs (Frankfurt, Germany), PAN-
+Biotech (Aidenbach, Germany), Promega Corporation (Madison, WI, USA), Qiagen (Hilden,
+Germany), Roth (Karlsruhe, Germany), Sarstedt (Nümbrecht, Germany), Schott (Mainz,
+Germany), Thermo Fisher Scientific (Walham, MA, USA), VWR international (Radnos, PA,
+USA).
+
+The consumables used in the experiment were sourced from the following suppliers:
+Beckman Coulter (Brea, CA, USA), Bio-Rad Laboratories (Hercules, CA, USA), Diagonal
+(Münster, Germany), Eppendorf (Hamburg, Germany), Macherey-Nagel (Düren, Germany),
+Promega Corporation (Madison, WI, USA), Qiagen (Hilden, Germany), Roth (Karlsruhe,
+Germany), Sarstedt (Nümbrecht, Germany), Schott (Mainz, Germany), Thermo Fisher
+Scientific (Waltham, MA, USA), VWR international (Radnos, PA, USA).
+
+\subsection{Media, Buffers, and Solutions}
+All media, buffers, and solutions that were used in the experiments are shown in \autoref{tab:materials_media}. NaOH and HCl were used to establish the pH. 
+\begin{longtable}{@{} l l l @{}}
+    \caption{\textbf{Media, buffers, and solutions that were used in this study}. Listed are the component types their respective amounts.} \label{tab:materials_media} \\
+        \toprule
+        \textbf{Medium/buffer/solution} & \textbf{Component} & \textbf{Amount} \\
+        \midrule
+        \endfirsthead
+        \toprule
+        \textbf{Medium/buffer/solution} & \textbf{Component} & \textbf{Amount} \\
+        \midrule
+        \endhead
+        agarose gel & Agarose & \SI{1.2}{\percent} (w/v) \\
+                        & Ethidium bromide & \SI{0.5}{\micro\gram\per\milli\litre} \\
+                        & in 1x TAE buffer & \\[1ex]
+        
+        AP buffer (pH 9.6) & Tris-HCl & \SI{100}{\milli\Molar} \\
+                           & NaCl & \SI{100}{\milli\Molar} \\
+                           & MgCl\textsubscript{2} & \SI{5}{\milli\Molar} \\[1ex]
+        blocking solution & powedered milk & \SI{40}{\gram\per\litre} \\
+                    & in PBS buffer & \\[1ex]
+        Coomassie staining solution & Coomassie Brilliant Blue & \SI{2.5}{\gram\per\litre} \\
+                                    & Methanol & \SI{50}{\percent} (v/v) \\
+                                    & Acetic acid & \SI{10}{\percent} (v/v) \\[1ex]
+        coating buffer (pH 9.6) & Na\textsubscript{2}CO\textsubscript{3} & \SI{15}{\milli\Molar} \\
+                                & NaHCO\textsubscript{3} & \SI{35}{\milli\Molar} \\[1ex]
+        destaining solution & Methanol & \SI{5}{\percent} (v/v) \\
+                            & Acetic acid & \SI{7.5}{\percent} (v/v) \\[1ex]
+        ELISA substrate buffer & Tris-HCl (pH 9.6) & \SI{50}{\milli\Molar} \\
+                                 & NaCl & \SI{150}{\milli\Molar} \\
+                                 & MgCl\textsubscript{2} & \SI{2}{\milli\Molar} \\[1ex]
+        ELISA substrate solution & \emph{p}-Nitrophenylphosphate & \SI{1}{\milli\gram\per\milli\litre} \\
+                                 & in ELISA substrate buffer &  \\[1ex]
+        LB medium & Yeast extract & \SI{5}{\gram\per\litre} \\
+                  & Tryptone & \SI{10}{\gram\per\litre} \\
+                  & NaCl & \SI{171}{\milli\Molar} \\
+                  & (Agar) & \SI{15}{\gram\per\litre} \\[1ex]
+        LB-Amp medium & Yeast extract & \SI{5}{\gram\per\litre} \\
+                  & Tryptone & \SI{10}{\gram\per\litre} \\
+                  & NaCl & \SI{171}{\milli\Molar} \\
+                  & Ampicillin & \SI{100}{\milli\gram\per\litre} \\
+                  & (Agar) & \SI{15}{\gram\per\litre} \\[1ex]
+        NBT/BCIP staining solution & NBT & \SI{33.3}{\gram\per\litre} \\
+                                   & BCIP & \SI{16.5}{\gram\per\litre} \\
+                                   & in dimethylformamide & \\[1ex]
+        PBS buffer & NaCl & \SI{137}{\milli\Molar} \\
+              KCl     & \SI{2.7}{\milli\Molar}  \\
+              Na\textsubscript{2}HPO\textsubscript{4} & \SI{8.1}{\milli\Molar} \\
+              KH\textsubscript{2}PO\textsubscript{4} & \SI{1.5}{\milli\Molar} \\[1ex]
+
+              phosphate buffer (0.01 M, pH 7.2) & Na\textsubscript{2}HPO\textsubscript{4} & \SI{6.67}{\milli\Molar} \\
+                                  & NaH\textsubscript{2}PO\textsubscript{4} & \SI{3.33}{\milli\Molar} \\[1ex]
+        PBS-T & Tween-20 & \SI{5}{\gram\per\litre} \\ 
+        & in PBS & \\[1ex]
+        reducing loading buffer (5x) & Tris-HCl (pH 6.8) & \SI{62.5}{\milli\Molar} \\
+                                     & Glycerine & \SI{300}{\gram\per\litre} \\
+                                     & SDS & \SI{40}{\gram\per\litre} \\
+                                     & $\beta$-Mercaptoethanol & \SI{10}{\percent} (v/v) \\
+                                     & Bromophenol blue & \SI{0.1}{\gram\per\litre} \\[1ex]
+        Sabu (10x) & Glycine & \SI{50}{\percent} (v/v) \\
+                   & Xylene cyanol FF & \SI{0.1}{\percent} (w/v) \\
+                   & Bromophenol blue & \SI{0.1}{\percent} (w/v) \\
+                   & in 1x TAE buffer (pH 8.0) & \\[1ex]
+        SDS running buffer & Glycine & \SI{200}{\milli\Molar} \\
+                              & SDS & \SI{1}{\gram\per\litre} \\
+                              & Tris & \SI{25}{\milli\Molar} \\[1ex]
+        semi-dry transfer buffer & Glycine & \SI{391}{\milli\Molar} \\
+                                & Methanol & \SI{20}{\percent} (v/v) \\
+                                & Tris & \SI{48}{\milli\Molar} \\[1ex]
+        TAE buffer & Tris & \SI{40}{\milli\Molar} \\
+                      & Acetic acid & \SI{0.1}{\percent} (v/v) \\
+                      & EDTA (pH 8.0) & \SI{1}{\milli\Molar} \\
+        \bottomrule
+\end{longtable}
+\FloatBarrier
+\subsection{Reaction Kits}
+
+The following reaction kits were used in this study:
+\begin{itemize}
+    \item Gibson Assembly\textsuperscript{\textregistered} Cloning Kit, NEB, Ipswich, MA
+    \item Mix2Seq Kit, Eurofins Genomics, Ebersberg, Germany
+    \item PureYield\textsuperscript{\texttrademark} Plasmid Miniprep System, Promega, Madison, WI
+    \item Wizard\textsuperscript{\textregistered} SV Gel and PCR Clean-Up System, Promega, Madison, WI
+    \item NucleoBond Xtra Midi kit for transfection-grade plasmid DNA, Macherey-Nagel, Düren, Germany
+    \item ALiCE\textsuperscript{\textregistered} for Research kit, LenioBio, Düsseldorf, Germany
+  \end{itemize}
+\FloatBarrier
+\subsection{Enzymes}
+All enzymes used in this study are shown in \autoref{tab:materials_enzymes}. 
+\begin{table}[h]
+    \centering
+    \caption{\textbf{Polymerases and restriction enzymes that were used in this study.} Listed are the reagent names, the manufacturer, and how the enzymes were used in the experiments. }
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{Reagent} & \textbf{Manufacturer} & \textbf{Use} \\
+    \midrule
+    GoTaq\textsuperscript{\textregistered} G2 DNA Polymerase & Promega & Colony PCR \\
+    Pfu DNA Polymerase & Promega & Insert Amplification \\
+    NcoI-HF\textsuperscript{\textregistered} & NEB & Restriction \\
+    KpnI-HF\textsuperscript{\textregistered} & NEB & Restriction \\
+    \bottomrule
+    \end{tabular}
+    \label{tab:materials_enzymes}
+\end{table}
+
+\FloatBarrier
+
+\subsection{Plasmids}
+\subsubsection{pLenEx-Strep-eYFP}
+The plasmid pLenEx-Strep-eYFP was used for cell-free expression of Strep-eYFP using the ALiCE\textsuperscript{\textregistered} expression kit. The plasmid contains an origin of replication for \emph{E. coli}, a gene for ampicillin resistance, and a gene encoding Strep-eYFP. This gene is flanked by 5'- and 3'-UTRs from tobacco mosaic virus (TMV) and under the T7 promoter. The plasmid contains restriction sites for NcoI at the 5' end of Strep-eYFP and for KpnI at the 3' end. In addition to cell-free expression, pLenEx-Strep-eYFP was used for cloning of the genetic elements d29-A, S-Tag-A, and S-Tag-B. The plasmid was provided by the Institute for Molecular Biotechnology.
+
+\subsubsection{pLenEx-d29-A, pLenEx-S-Tag-A, pLenEx-S-Tag-B}
+Like pLenEx-Strep-eYFP, the plasmids pLenEx-d29-A, pLenEx-S-Tag-A, and pLenEx-S-Tag-B contain an origin of replication for \emph{E. coli} and a gene for ampicillin resistance. Instead of Strep-eYFP, the vectors carry the genetic elements d29-A, S-Tag-A, and S-Tag-B, as described in \autoref{ch:gromacs}, respectively. These genes are again flanked by 5'- and 3'-UTRs from TMV and are under control of the T7 promoter and in-between the NcoI and KpnI restriction sites. The plasmids were created based on pLenEx-Strep-eYFP using Gibson Assembly.
+
+
+\subsubsection{pLenEx-CP-PVX}
+The plasmid pLenEx-CP-PVX carries the same genetic elements as pLenEx-Strep-eYFP, except for the Strep-eYFP gene, which is instead replaced by a gene encoding for the PVX CP. The plasmid was provided by the Institute for Molecular Biotechnology.
+\FloatBarrier
+\subsection{Antibodies}
+%Rabbit-Anti-PVX, polyclonal rabbit IgG, DSMZ AS-0126
+%S-peptide Epitope Tag Monoclonal Antibody, monoclonal mouse IgG, Invitrogen MA1-981
+%Goat-Anti-Rabbit FC AP, polyclonal goat IgG, coupled with alkaline phosphatase, AffiniPure Jackson Research, UK
+%Goat-Anti-Mouse FC AP, polyclonal goat IgG, coupled with alkaline phosphatase, AffiniPure Jackson Research, UK
+All antibodies that were used in this study are listed in \autoref{tab:materials_antibodies}. The antibodies were used both for Western Blotting and for ELISA assays. 
+\begin{table}[h]
+    \centering
+    \caption{\textbf{Antibodies that were used in this study.} Listed are the characteristics of the antibody and its manufacturer. }
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{Antibody} & \textbf{Type} & \textbf{Manufacturer / Catalog} \\
+    \midrule
+    Rabbit-Anti-PVX & Polyclonal rabbit IgG & DSMZ AS-0126 \\
+    S-peptide Epitope Tag Monoclonal Antibody & Monoclonal mouse IgG & Invitrogen MA1-981 \\
+    Goat-Anti-Rabbit (GAR\textsuperscript{AP}\textsubscript{FC}) & Polyclonal goat IgG, alkaline phosphatase conjugate & Biozol, Hamburg \\
+    Goat-Anti-Mouse (GAM\textsuperscript{AP}\textsubscript{FC}) & Polyclonal goat IgG, alkaline phosphatase conjugate & Biozol, Hamburg \\
+    \bottomrule
+    \end{tabular}
+    \label{tab:materials_antibodies}
+\end{table}
+\FloatBarrier
+% TODO: Ask Caro on Antibodies
+\subsection{Synthetic Oligonucleotides}
+All syntehtic oligonucleotides that were used in this study are shown in \autoref{tab:materials_oligos}. 
+\begin{table}[h]
+    \centering
+    \caption{\textbf{Synthetic oligonucleotides that were used in this study.} Regions overlapping with the amplified genes are displayed in uppercase. }
+    \begin{tabularx}{\linewidth}{lXl}
+    \toprule
+    \textbf{Name} & \textbf{Sequence (5' $\rightarrow$ 3')} & \textbf{Use} \\
+    \midrule
+    d29-A fwd & acattttacattctacaactaccATGGCTT\newline CTGGCTTATTCACCATACCTG & Insert amplification \\[1ex]
+    d29-A rev & ccaaaccagaagagcttggtaccTTAAGGG\newline GGGGGAATGGTCAC & Insert amplification \\[1ex]
+    S-Tag-A fwd & acattttacattctacaactaccatggcTA\newline AAGAAACAGCCGCCGCTAAATTC & Insert amplification \\[1ex]
+    S-Tag-B fwd & acattttacattctacaactaccatggctA\newline AGGAGACTGCTGCAGCCAAG & Insert amplification \\[1ex]
+    S-Tag-B rev & ccaaaccagaagagcttggtaccTTAAGCT\newline GCGGGTATGTGTATGATTC & Insert amplification \\[1ex]
+    pLenSeq fwd & CGACTCACTATAGGGAGAGTA & Sequencing \\[1ex]
+    pLenSeq rev & ACGTGTGATTACGGACACAATC & Sequencing \\
+    \bottomrule
+    \end{tabularx}
+    \label{tab:materials_oligos}
+\end{table}
+\FloatBarrier
+
+\subsection{Synthetic Genes}\label{subseq:synthetic_genes}
+Genes for the constructs S-Tag-A and S-Tag-B were ordered from Integrated DNA Technologies (Coralville, Iowa). The exact sequences can be found in \autoref{appendix:synthetic_seqs}.
+
+\subsection{Organisms}
+NEB\textsuperscript{\textregistered} Turbo Competent \emph{E. coli} (High Efficiency) was used for cloning of the plasmids pLenEx-d29-A, pLenEx-S-Tag-A, and pLenEx-S-Tag-B.
+\subsection{DNA Cloning}
+\subsubsection{PCR Amplification of Insert DNA}
+Using the synthetic genes S-Tag-A and S-Tag-B (\autoref{subseq:synthetic_genes}) and the primer pairs d29-A fwd / d29-A rev (with template S-Tag-A), S-Tag-A fwd / d29-A rev (with template S-Tag-A), and S-Tag-B fwd / S-Tag-B rev (with template S-Tag-B), polymerase chain reactions (PCRs) were conducted for amplification of the inserts. The primers also introduced overlapping regions with the plasmid pLenEx-Strep-eYFP for the following Gibson Assembly, and in the case of d29-A fwd, a start codon. The PCR was conducted with a Pfu polymerase. The composition of the PCR mix is listed in \autoref{tab:methods_pcr_composition}.
+\begin{table}
+    \centering
+    \caption{\textbf{Composition of the PCR Mix for Insert Amplification. }}
+    \label{tab:methods_pcr_composition}
+\begin{tabular}{ll}
+\toprule
+\textbf{Component} & \textbf{Amount} \\
+\midrule
+MQ-H\textsubscript{2}O & \SI{38}{\micro\litre} \\
+10x Pfu Buffer & \SI{5}{\micro\litre} \\
+dNTPs ($\SI{10}{\milli\Molar}$) & \SI{2}{\micro\litre} \\
+Forward Primer (\SI{10}{\micro\Molar}) & \SI{2}{\micro\litre} \\
+Reverse Primer (\SI{10}{\micro\Molar}) & \SI{2}{\micro\litre} \\
+Pfu DNA Polymerase (\SI{3}{\enzymeUnit\per\micro\litre}) & \SI{0.5}{\micro\litre} \\
+DNA template (\SI{10}{\nano\gram\per\micro\litre}) & \SI{5}{\micro\litre}  \\
+\bottomrule
+\end{tabular}
+\end{table}
+The PCR reaction was conducted in a thermocycler. The exact program is described in \autoref{tab:methods_pcr_cycle}. After running the PCR, the products were frozen at $\SI{-20}{\degreeCelsius}$ until further processing.
+\begin{table}[ht]
+    \centering
+    \caption{\textbf{PCR Program used for Insert Amplification.}}
+    \label{tab:methods_pcr_cycle}
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{Step} & \textbf{Temperature (°C)} & \textbf{Time} \\
+    \midrule
+    Initial Denaturation     & 94  & 4 min   \\[1ex]
+    \multicolumn{3}{l}{Repeat for 30 cycles:} \\[1ex]
+    \quad Denaturation       & 94  & 30 s    \\
+    \quad Annealing          & 57  & 30 s    \\
+    \quad Elongation         & 72  & 100 s   \\[1ex]
+    Final Elongation         & 72  & 5 min   \\
+    Storage                  & 8   & $\infty$ (hold)  \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+\subsubsection{Plasmid Restriction Digest}
+The plasmid pLenEx-Strep-eYFP was digested using the restriction enzymes NcoI-HF and KpnI-HF. Therefore, $\SI{10}{\micro\gram}$ of the plasmid, $\SI{5}{\micro\litre}$ CutSmart\textsuperscript{\textregistered} Buffer, $\SI{1}{\micro\litre}$ of NcoI-HF (\SI{20}{\enzymeUnit\per\micro\litre}), and $\SI{1}{\micro\litre}$ of KpnI-HF (\SI{20}{\enzymeUnit\per\micro\litre}) were added to MQ-H\textsubscript{2}O up to a total volume of $\SI{50}{\micro\litre}$. The mixture was incubated at $\SI{37}{\degreeCelsius}$ for three hours and thereafter frozen at $\SI{-20}{\degreeCelsius}$ until further processing. 
+
+\subsubsection{Agarose Gel Electrophoresis and DNA Recovery}
+Agarose gel electrophoresis was used to validate and purify the restricted plasmid and the PCR products. $\SI{50}{\micro\litre}$ of each sample were mixed with $\SI{5}{\micro\litre}$ 10x Sabu and applied to the gel, splitting the sample into $\SI{25}{\micro\litre}$ per track. The gels were run at either $\SI{100}{\volt}$ for about 45 minutes or at $\SI{120}{\volt}$ for about 60 minutes, depending on the size of the gel. After the gel ran through, the samples were cut out under illumination from a UV light source. The DNA was recovered from the gel samples using the Wizard\textsuperscript{\textregistered} SV Gel and PCR Clean-Up System. The steps were carried out following the manufacturer's protocol. DNA concentrations of each sample were determined using the NanoDrop\textsuperscript{\texttrademark} One.
+
+\subsubsection{Gibson Assembly}
+A Gibson Assembly using $\SI{50}{\nano\gram}$ of purified linear vector DNA was conducted to create the plasmids pLenEx-d29-A, pLenEx-S-Tag-A, and pLenEx-S-Tag-B. The required mass of insert DNA was calculated using \autoref{eq:gibson}.
+\begin{equation}\label{eq:gibson}
+\text{Mass}_{\text{insert}} = \left(\frac{\text{desired molar ratio}}{1}\right) \times \text{Mass}_{\text{vector}} \times \left(\frac{\text{Length}_{\text{insert}}}{\text{Length}_{\text{vector}}}\right)
+\end{equation}
+The molar ratio was chosen as 2. 
+Given the plasmid length of 2173 bp, and the insert lengths of 679 bp, 802 bp, and 802 bp for the three inserts d29-A, S-Tag-A, and S-Tag-B respectively, the insert DNA masses were calculated as $\SI{31.2}{\nano\gram}$ for d29-A and $\SI{37}{\nano\gram}$ for S-Tag-A and S-Tag-B. 
+The plasmid and inserts and $\SI{10}{\micro\litre}$ Gibson Assembly\textsuperscript{\textregistered} Master Mix were added to MQ-H\textsubscript{2}O to a total volume of $\SI{20}{\micro\litre}$ and incubated at $\SI{50}{\degreeCelsius}$ for one hour. 
+
+\subsubsection{Transformation into Competent Cells}
+Transformation of the assembled plasmids into NEB\textsuperscript{\textregistered} Turbo Competent \emph{E. coli} cells was carried out using the manufacturer's High Efficiency Transformation Protocol, using a reduced volume of cells compared to the original protocol.
+
+After thawing the cells on ice for 10 minutes, the cells were gently mixed and \SI{20}{\micro\liter} of the cells were transferred to a reaction tube on ice. \SI{2}{\micro\litre} of the Gibson Assembly product were added to the cell mixture and carefully flicked to mix cells and DNA. The mixture was placed on ice for 30 minutes. Afterward, a heat shock at exactly \SI{42}{\celsius} was conducted for 30 seconds. The cells were thereafter placed on ice for 5 minutes. Afterward, \SI{950}{\micro\liter} of room temperature salt medium was added to the mixture. The cells were rotated at \SI{37}{\celsius} for 60 minutes, during which LB-Amp selection plates were warmed to \SI{37}{\celsius}. The cells were mixed thoroughly by flicking the tube and inverting it. Afterward, \SI{100}{\micro\liter} were applied to a selection plate and incubated overnight at \SI{37}{\celsius}.
+
+\subsubsection{Colony PCR}
+After incubation overnight, 9 colonies of each construct were picked for Colony PCR. The master mix for the PCR was created following the composition in \autoref{tab:pcr-mix}.
+
+\begin{table}[h]
+\centering
+\caption{\textbf{PCR Master Mix Composition}}
+\label{tab:pcr-mix}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Component & Amount \\ 
+\midrule
+MQ-H\textsubscript{2}O & \SI{15}{\micro\liter} \\
+5x Green GoTaq\textsuperscript{\textregistered} Reaction Buffer & \SI{4}{\micro\liter} \\
+dNTPs (\SI{10}{\milli\Molar}) & \SI{0.4}{\micro\liter} \\
+Forward Primer & \SI{0.2}{\micro\liter} \\
+Reverse Primer & \SI{0.2}{\micro\liter} \\
+Taq DNA Polymerase & \SI{0.2}{\micro\liter} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The colonies were picked using sterile toothpicks and applied to an LB-Amp reference plate. Afterward, they were placed into the PCR tubes for about 30 seconds. The reference plate was incubated at \SI{37}{\celsius} overnight. The PCR was run using the program from \autoref{tab:methods_pcr_cycle} and was followed by an agarose gel electrophoresis as previously described for analysis of the PCR products. 
+
+\subsubsection{Plasmid Mini-Preparation and Sequencing}
+For each construct, two clones showing successful amplification during the colony PCR were selected for a plasmid mini preparation and sequencing. \SI{6}{\milli\liter} of LB-AMP medium were inoculated and incubated overnight at \SI{37}{\celsius}. 
+
+The next day, the culture was centrifuged over three rounds of \SI{2}{\milli\liter} each for \SI{3}{\minute} at \SI{6500}{\times g}, disposing of the supernatant. The pellet was fully resuspended by vortexing with \SI{600}{\micro\liter} of MQ-H\textsubscript{2}O. Then, \SI{100}{\micro\liter} of cell lysis buffer were added and the reaction tube was carefully inverted for mixing. Afterward, \SI{350}{\micro\liter} of neutralization solution were added, and the tube was inverted until a full color change to yellow occurred. 
+
+The solution was centrifuged for \SI{10}{\minute} at \SI{21300}{\times g}. Afterward, the supernatant was pipetted onto a PureYield\textsuperscript{\texttrademark} mini column. The column was centrifuged for \SI{15}{\second} at \SI{21300}{\times g}, and the flow-through was discarded.
+
+\SI{200}{\micro\liter} of endotoxin removal wash were added to the column, followed by centrifugation for \SI{15}{\second} at \SI{21300}{\times g}, again discarding the flow-through. Then, \SI{400}{\micro\liter} of column wash solution were added to the column, followed by centrifugation for \SI{30}{\second} at maximum speed. The flow-through was discarded.
+
+The column was transferred to a new reaction tube. Elution was performed using \SI{30}{\micro\liter} of nuclease-free water. After application of the water and incubation for \SI{1}{\minute} at room temperature, the column was centrifuged for \SI{15}{\second} at \SI{21300}{\times g}. The concentration of the plasmid in the flow-through was determined using the NanoDrop\textsuperscript{\texttrademark} One.
+
+The purified plasmids were diluted to a final concentration of \SI{100}{\nano\gram\per\micro\litre}. In a Mix2Seq kit, \SI{5}{\micro\litre} of the plasmid was mixed with \SI{5}{\micro\litre} of pLenSeq fwd (\SI{10}{\micro\Molar}) in one compartment and with \SI{5}{\micro\litre} of pLenSeq rev (\SI{10}{\micro\Molar}) in another compartment. The kit was sent for sequencing.
+
+\subsubsection{Plasmid Midi-Preparation}
+After successful sequencing, the clones were used in a midi-preparation for use of the plasmids in cell-free protein expression. As recommended by the cell-free expression kit's manufacturer, the Macherey-Nagel\textsuperscript{\textregistered} NucleoBond\textsuperscript{\textregistered} Xtra kit was used for the preparation. 
+
+The midi-preparation was conducted following the manufacturer's protocol for low-copy plasmids. Concretely, \SI{200}{\milli\liter} of LB-AMP medium were inoculated and incubated overnight at \SI{37}{\celsius}. The next morning, the cell culture was centrifuged at \SI{4500}{\times g} at \SI{4}{\celsius} for \SI{15}{\minute}. The pellet was resuspended in \SI{16}{\milli\liter} RES buffer by vortexing. Lysis was conducted in \SI{16}{\milli\liter} of LYS buffer at room temperature for \SI{5}{\minute}. Neutralization was performed using \SI{16}{\milli\liter} of NEU buffer. 
+
+The NucleoBond column, including the filter, was equilibrated with \SI{12}{\milli\liter} EQU buffer. For clarification of the lysate, centrifugation at \SI{5000}{\times g} and \SI{4}{\celsius} for \SI{10}{\minute} was conducted. Some precipitate remained in the reaction tube and was carefully decanted before applying the lysate to the column on top of the column's filter. Washing was done with \SI{5}{\milli\liter} of EQU buffer. Afterward, the filter was removed and washing was repeated using \SI{8}{\milli\liter} of Wash buffer. Elution was conducted using \SI{5}{\milli\liter} of ELU buffer.
+
+For precipitation, \SI{3.5}{\milli\liter} of isopropyl alcohol were added to the mixture. A centrifugation at \SI{5000}{\times g} and \SI{4}{\celsius} for \SI{1}{\hour} was conducted. The supernatant was discarded. Then, \SI{2}{\milli\liter} of \SI{70}{\percent} ethanol were added, followed by a second centrifugation at \SI{5000}{\times g} for \SI{5}{\minute} at \SI{20}{\celsius}. The ethanol was carefully removed by pipetting, and the reaction tube was dried for \SI{10}{\minute}. 
+
+Afterward, the DNA was resuspended in \SI{500}{\micro\liter} MQ-H\textsubscript{2}O. The concentration was determined using the NanoDrop\textsuperscript{\texttrademark} One.
+
+\subsection{Protein Expression and Purification}
+\subsubsection{Cell-Free Protein Expression}
+Cell-free protein expression of the constructs d29-A, S-Tag-A, and S-Tag-B was conducted using an ALiCE\textsuperscript{\textregistered} for Research kit. Before starting the reaction, the plasmids pLenEx-d29-A, pLenEx-S-Tag-A, pLenEx-S-Tag-B, pLenEx-CP-PVX, and pLenEx-Strep-eYFP (all from purification using a NucleoBond Xtra Midi kit) were concentrated using speed vacuuming at \SI{30}{\degreeCelsius} to concentrations between \SI{1400}{\nano\gram\per\micro\litre} and \SI{3300}{\nano\gram\per\micro\litre}. The volumes of plasmid DNA to be used for the cell-free reaction were calculated according to \autoref{eq:alice_calc}. The final plasmid concentration was chosen as \SI{50}{\nano\Molar}. 
+
+\begin{align}
+    \label{eq:alice_calc}
+    \begin{split}
+V_{\text{DNA}}\, [\si{\micro\liter}] =&\left( L_{\text{plasmid}}\, [\text{bp}] \cdot 618\ \frac{\text{g}}{\text{mol} \cdot \text{bp}} \right) \cdot\ V_{\text{reaction}}\, [\si{\micro\liter}] \\
+& \cdot\ \left( \frac{c_{\text{final}}\, [\si{\nano\Molar}]}{c_{\text{stock}}\, [\si{\nano\gram}/\si{\micro\liter}]} \right) \cdot\ 10^{-6}
+    \end{split}
+\end{align}
+
+Before starting the reaction, the \SI{50}{\micro\litre} ALiCE tubes were fully thawed in a heating block at \SI{25}{\degreeCelsius}. The solution was mixed by inverting the tubes and centrifuged for 5 seconds at \SI{100}{\times g} to collect the liquid. After centrifugation, the tubes were placed on ice. The lids were perforated with a single hole using a needle (\SI{0.9}{\milli\meter} diameter). The appropriate volume of the plasmids pLenEx-d29-A, pLenEx-S-Tag-A, pLenEx-S-Tag-B, pLenEx-CP-PVX, and pLenEx-Strep-eYFP were added to the respective reaction tubes. Additionally, a non-template control was set up by adding \SI{2}{\micro\litre} MQ-H\textsubscript{2}O. The reaction was incubated at \SI{25}{\degreeCelsius} on an Eppendorf ThermoMixer at \SI{700}{rpm} for \SI{48}{\hour}. Afterward, the reaction tubes were placed on ice to stop the reaction, before being frozen at \SI{-20}{\degreeCelsius}. 
+
+\subsubsection{Protein Purification Using Capto Core 700}
+Following cell-free protein expression, size exclusion chromatography using Capto\textsuperscript{\texttrademark} Core 700 multimodal chromatography resin was conducted to purify large particles. \SI{1}{\milli\litre} Capto\textsuperscript{\texttrademark} Core matrix was suspended in \SI{3}{\milli\litre} of \SI{0.1}{\Molar} phosphate buffer (pH 7.2) within a column and full sedimentation was awaited. \SI{30}{\micro\litre} of the cell-free expression solution were applied to the column and incubated for \SI{5}{\minute}. Afterward, the flow-through was collected. The column was cleaned using \SI{3}{\milli\litre} of a solution out of \SI{1.5}{\milli\litre} \SI{30}{\percent} isopropyl alcohol and \SI{1.5}{\milli\litre} \SI{1}{\Molar} NaOH. The column was stored in \SI{20}{\percent} ethanol at \SI{4}{\degreeCelsius} and reused multiple times. The chromatography was used on the samples d29-A, S-Tag-A, S-Tag-B, and PVX CP. 
+
+\subsection{Protein Analysis}
+\subsubsection{SDS-PAGE}
+Samples from cell-free protein expression, both before and after purification with the Capto\textsuperscript{\texttrademark} Core 700 column, were used in an discontinuous SDS polyacrylamide gel electrophoresis (SDS-PAGE) for further use with Coomassie Staining and Western Blot. 
+
+The composition of the resolving gel and the stacking gel are listed in \autoref{tab:sds_gels_content}. All reagents used for the resolving gel, except for the ammonium persulfate (APS), were mixed together by vortexing. After addition of APS, the solution was shortly vortexed and about \SI{5}{\milli\litre} of the gel were transferred into a $\SI{0.75}{\milli\metre}$ thick chamber for polymerization. Directly afterward, isopropyl alcohol was added to the top of the gel. 
+
+After polymerization, the isopropyl alcohol was removed using Whatman paper. The components for the stacking gel were mixed, APS was added, and the stacking gel was poured on top of the resolving gel. A comb was inserted into the stacking gel to create sample pockets.
+
+\begin{table}[h]
+    \label{tab:sds_gels_content}
+    \centering
+    \caption{\textbf{Composition of discontinuous SDS-PAGE gels.} The amounts are shown for the preparation of two gels.}
+    \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{Component} & \textbf{Resolving Gel (T = 12\%)} & \textbf{Stacking Gel (T = 4\%)} \\
+    \midrule
+    MQ-H\textsubscript{2}O       & \SI{2.115}{\milli\liter} & \SI{3.645}{\milli\liter} \\
+    Tris-HCl stock (1 M)                    & \SI{3.75}{\milli\liter} (pH 8.8)  & \SI{625}{\micro\liter} (pH 6.8)  \\
+    AA stock (30\%)                                       & \SI{4}{\milli\liter}     & \SI{830}{\micro\liter}   \\
+    SDS (10\%)                                            & \SI{100}{\micro\liter}   & \SI{50}{\micro\liter}    \\
+    TEMED                                                & \SI{10}{\micro\liter}    & \SI{5}{\micro\liter}     \\
+    APS (20\%)                                            & \SI{30}{\micro\liter}    & \SI{15}{\micro\liter}    \\
+    \textbf{Total Volume}                                 & \SI{10}{\milli\liter}    & \SI{5}{\milli\liter}     \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+After polymerization of the stacking gel, the gel was either directly used in electrophoresis, or wrapped into wet paper and stored at \SI{4}{\degreeCelsius} for up to a week. 
+
+For electrophoresis, the gel was placed vertically in a chamber containing SDS running buffer. The samples were diluted with MQ-H\textsubscript{2}O, using a 1:4 for samples from the ALiCE reaction mixture and 1:2 for samples after CaptoCore chromatography. The dilutions were mixed with 5x reducing loading buffer in a 4:1 ratio and boiled for \SI{5}{\min}. \SI{10}{\micro\litre} sample volume was transferred into the gel pockets, and the marker Color Prestained Protein Standard, Broad Range (10-250 kDa) by New England Biolabs was used as marker. The gel was run at \SI{180}{\volt} for about one hour. 
+
+\subsubsection{Coomassie Staining}
+After completion of the SDS-PAGE, the gels were placed in Coomassie Staining solution for 30 minutes, while being gently swiveled on an orbital shaker. The Coomassie Staining solution was removed, and destaining solution was added to the gel, still being swiveled. The destaining solution was replaced multiple times, before destaining was complete. 
+
+\subsubsection{Western Blot}
+For immunologic detection of specific epitopes on the SDS gel, Western Blotting was conducted. The gel was placed in semi-dry transfer buffer, and eight layers of Whatman paper as well as a nitrocellulose membrane were soaked in semi-dry transfer buffer for \SI{5}{\min}. Then, a stack of four layers of Whatman paper, the nitrocellulose membrane, the gel, and four layers of Whatman paper, was assembled in the blotting chamber of a Trans-Blot\textsuperscript{\textregistered} Turbo\textsuperscript{\texttrademark} machine. Transfer to the membrane took place at a constant voltage of \SI{25}{\volt} and a current of maximally \SI{1}{\ampere}.
+
+After blotting, the membrane was cut to the size of the gel, placed into \SI{10}{\milli\litre} blocking buffer and incubated for \SI{30}{\min} under swiveling. The blocking buffer was removed, and the membrane was washed three times with PBS buffer, waiting \SI{5}{\min} between each exchange of the buffer. The primary antibody (either Rabbit-Anti-PVX in a 1:5000 ratio or Mouse-Anti-S-Tag in a 1:10000 ratio) was dissolved in \SI{10}{\milli\litre} PBS buffer and added to the membrane. Incubation with the primary antibody was conducted overnight at room temperature or over the weekend at \SI{4}{\degreeCelsius}. Afterward, the three washing steps were repeated and the secondary antibody was added (either Goat-Anti-Rabbit FC AP or Goat-Anti-Mouse FC AP, both in a 1:5000 ratio in PBS). 
+
+\subsubsection{ELISA}
+For quantification of the expression in the different ALiCE expression setups, an enzyme-linked immunosorbent assay (ELISA) was performed. The experiment was conducted both with the anti-PVX antibody and the anti-S-Tag antibody. 
+
+\SI{100}{\micro\litre} of the samples from ALiCE expression of d29-A, S-Tag-A, S-Tag-B, PVX CP, and the non-template control were transferred to a high-binding microplate in triplicates, using dilutions of 1:500 and 1:1000 for each sample. As calibration, eight dilutions of S-Tag-CP-PVX particles, ranging in concentration from \SI{1500}{\nano\gram\per\milli\litre} to \SI{10}{\nano\gram\per\milli\litre}, were applied to the microplate as triplicates of \SI{100}{\micro\litre} each. Coating buffer was used in the creation of the dilutions and as a blank. 
+
+The microplate was incubated for three hours at \SI{37}{\degreeCelsius}. Then, the plate was washed three times at room temperature using ~\SI{200}{\micro\litre} PBS-T, with \SI{5}{\min} in-between washing steps. Afterward, remaining binding sites were blocked using \SI{200}{\micro\litre} blocking solution per well, with incubation for one hour at \SI{37}{\degreeCelsius}, before washing three times with PBS-T. Incubation with \SI{100}{\micro\litre} of the primary antibody (either Rabbit-Anti-PVX or Mouse-Anti-S-Tag, at a 1:2000 dilution) was conducted at \SI{4}{\degreeCelsius} over the weekend. Following three washing steps with PBS-T, the secondary antibody (either $\mathrm{GAR}_{\mathrm{FC}}^{\mathrm{AP}}$ or $\mathrm{GAR}_{\mathrm{FC}}^{\mathrm{AP}}$, at a 1:1000 dilution) was added, again using \SI{100}{\micro\litre}. After incubation at \SI{37}{\degreeCelsius} for two hours and three final washing steps with PBS-T, \SI{100}{\micro\litre} ELISA substrate solution were added. Incubation with the substrate took place for one hour at \SI{37}{\degreeCelsius}, with measurements of the absorbance at \SI{405}{\nano\meter} every 15 minutes. 
+
+
+\subsubsection{Electron Microscopy}
+For a definite observation on the formation of particles, transmission electron microscopy (TEM) was conducted with the samples after CaptoCore purification. For preparation of each sample, a drop of \SI{20}{\micro\litre} MQ-H\textsubscript{2}O was placed on top of parafilm spanned over a petri dish. \SI{5}{\micro\litre} of the samples were added to the drops. The TEM grid was carefully placed to float on the droplet, followed by incubation at room temperature for 30 minutes. Afterward, the TEM grid was washed by dragging it over three drops of MQ-H\textsuperscript{2}O and placed on a drop of \SI{1}{\percent} Phosphotungstic acid for 20 seconds. Excess liquid was removed by carefully tapping the grid with its thin side on a piece of laboratory tissue. The grids were stored in a sample box and send to the Institute of Pathology, Uniklinik RWTH Aachen, for TEM analysis. 

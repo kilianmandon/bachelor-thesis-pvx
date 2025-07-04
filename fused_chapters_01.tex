@@ -1,0 +1,177 @@
+% Arguments:
+% Usefulness of PVX: 
+%   Delivery of tumor necrosis factor-related apoptosis-inducing ligand (TRAIL) protein using Potato Virus X (PVX) nanoparticles for cancer therapy (scaffold for proteins, https://pubs.acs.org/doi/10.1021/acsnano.8b09462)
+%   PVX as a carrier for doxorubicin in cancer therapy, https://doi.org/10.1039/c6nr09099k
+%   Chemical and genetic functionalization of PVX for biomedical applications, established chemical bioconjugation methods, https://doi.org/10.1021/nl9035753
+% Changing RNA behavior:
+%   Packaging of other RNAs into the virus might be helpful, but PVX is picky https://doi.org/10.1016/j.virol.2005.01.018 (but conservation of RNA binding pocket not a big focus)
+%   For CPMV: genome raises biosafety problems, and makes packaging easier https://doi.org/10.3390/ijms24021533
+%   "makes them noninfectious and eliminates a potential uncontrolled immunostimulatory source, rendering VLPs ideal building blocks for immunotherapy", https://pubs.acs.org/doi/10.1021/acs.nanolett.9b00300
+%   large number of VLPs has medical approval https://doi.org/10.1186/s12951-021-00806-7
+% PVX infects Nicotiana tabacum, https://doi.org/10.1111/mpp.13163, making ALiCE a good choice
+% ProteinMPNN and RFdiffusion capable of variable design tasks, particularly symmetric binder design
+% AI-based structure prediction methods helpful for filtering out good designs
+% what we'll do. 
+
+% VLPs are nanostructures lacking viral genetic material https://doi.org/10.3390/v14091905 VLPs are great: Medical Applications (carriers for material like genes, proteins or small drugs, scaffolds for proteins, allow for targeted delivery) https://doi.org/10.1186/s12951-021-00806-7. Due to safety, large number of VLPs has medical approvement (https://doi.org/10.1038/s41423-022-00897-8)
+% PVX is great (see above), but not a VLP since assembly doesnt work (https://doi.org/10.3389/fpls.2019.00158)
+% Computational Design could make it assemble
+% Expression in ALiCE Lysate, since it's from one of its host Nicotiana tabacum, 
+% and can give high yields with very easy setup, and is very fast compared to creation in plants
+
+Virus-like particles (VLPs) are nanostructures assembled from viral protein subunits, but lacking genetic material for replication, and are therefore non-infectious \cite{vlps_def}. Due to their properties, VLPs have a wide number of medical applications. The particles can serve as carriers for genes, proteins, or small drugs, as well as serving as scaffolds for proteins. A particular benefit of their use as carriers is their ability for targeted drug delivery \cite{vlps_review}. Due of their effectiveness as therapeutics and high biosafety profile, several VLP-based vaccines have received clinical approval, such as the Human papilloma virus vaccine Gardasil\textsuperscript{\textregistered} or the Hepatitis B virus vaccine PreHevbrio\textsuperscript{\textregistered} \cite{vlps_clinically_approved}.
+
+Potato Virus X (PVX) is a \emph{Potexvirus} in the family of the \emph{Alphaflexiviridae} and has proven to be a versatile delivery mechanism for a variety of therapeutic agents. It was successfully modified as a carrier for the Tumor Necrosis Factor-Related Apoptosis-Inducing Ligand (TRAIL), a protein drug inducing apoptosis in cancer cells \cite{pvx_trail}. Further, PVX nanoparticles were stably associated with doxorubicin, a commonly used chemotherapeutic \cite{pvx_doxorubicin} and, more generally, can be functionalized by standard amine chemistry or ``click'' chemistry \cite{pvx_chemical_modification}. However, PVX is currently unsuited for use as a VLP since its coat protein fails to assemble in the absence of its viral genome \cite{juli_sagt_keine_assembly}.
+
+This shortcoming could be alleviated by modern developments in Computational Protein Design. The Deep Learning based method ProteinMPNN is capable of generating novel sequences to match a certain backbone structure for monomers, heterooligomers, and also homooligomers. The sequences are designed to be soluble and often assemble correctly into a desired oligomeric state \cite{PMPNN2022}. The backbones used by ProteinMPNN can be generated with RFdiffusion, a diffusion-based algorithm capable of creating probable protein backbones to satisfy a variety of conditions, such as scaffolding a fixed motif, binding to a predetermined target, or satisfying a specific geometry \cite{RFdiffusion}. The already high success rate of these tools can be even further enhanced by filtering designs through metrics based on structure prediction tools \cite{physics_binder_design}. All these developments in the field of protein design were created by David Baker's Lab, whose work in computational protein design was awarded with the Nobel Prize in Chemistry in 2024. 
+
+In this work, we will describe our efforts to use the aforementioned design tools to realize a modified PVX CP that assembles in absence of its viral genome. The designs created through computational methods will be experimentally expressed using the ALiCE\textsuperscript{\textregistered} cell-free expression systems, and analyzed for assembly into VLPs. The ALiCE\textsuperscript{\textregistered} lysate is derived from \emph{Nicotiana tabacum}, a diagnostic host of PVX \cite{pvx_host_tabacum}, rendering the lysate a natural choice for expression. 
+
+The structure of PVX was determined by Grinzato et al., up to a resolution of $\SI{2.2}{\angstrom}$ \cite{Grinzato2020}. The structural data was made available through the PDB, as a file containing $13$ consecutive protein subunits, forming one-and-a-half cycles of the helix. Notably, structural determination was not possible for the 29 amino acids long N-terminal domain, due to its flexibility. The N-terminal domain is relevant for the particle's structure and assembly. In experiments by \cite{del22_rigid}, it was found that while a deletion of the 22 N-terminal amino acids still leaves the virus infectious, the morphology of the particles changes from the wild type. The structure-guided computational design process will only be used to design the rigid part of the protein, the N-terminal domain will however be fused to the constructs in the end. 
+
+The following chapters require a flexible way to use the symmetry of PVX, such as the ability to generate different configurations of monomers (e.g. a $3 \times 3$ neighborhood of monomers), or the ability to dynamically enforce this symmetry during symmetry-guided prediction with AlphaFold (\autoref{ch:alphafold}) or symmetry-guided design with RFdiffusion (\autoref{ch:rfdiffusion}). Therefore, this section discusses the computation of the symmetry relationship between consecutive monomers, and how it can be applied to generate new configurations of monomers.
+
+Let $\{\vec{\mathbf{r}}_{j,i}^{\,\text{original}}\}$ denote the backbone atom positions of chain $j$ in the original PDB file, and let $\{\vec{\mathbf{r}}_{j}^{\,\text{original}}\}$ be their arithmetic mean. 
+
+We choose $T_0 = (I_3, \vec{\mathbf{r}}_A^{\,\text{original}})$ as our new origin, centered on chain $A$. The backbone atom coordinates in this frame are denoted by $\vec{\mathbf{r}}_{j,i}$, and we have
+\begin{equation}
+    \vec{\mathbf{r}}_{j,i} = T_0^{-1} \circ \vec{\mathbf{r}}_{j,i}^{\,\text{original}} = \vec{\mathbf{r}}_{j,i}^{\,\text{original}} - \vec{\mathbf{r}}_{A}^{\,\text{original}}
+\end{equation}
+
+The frames of all other chains in these coordinates are computed as the optimal rigid body transform to align the chain with A. That is,
+\begin{equation}
+T_j = \underset{T \in \mathrm{SE}(3)}{\arg\min} \sum_i \left\| T\circ\vec{\mathbf{r}}_{A,i} - \vec{\mathbf{r}}_{j,i} \right\|^2
+\end{equation}
+
+Using the Kabsch algorithm \cite{Lawrence_2019}, $T_j$ can be computed as $T_j = (R_j, \vec{\mathbf{t}}_j)$, where 
+\begin{equation}
+    \vec{\mathbf{t}}_j= \vec{\mathbf{r}}_j - R_j\vec{\mathbf{r}}_A =\vec{\mathbf{r}}_j
+\end{equation}    
+since $\vec{\mathbf{r}}_A=\vec{\mathbf{0}}$, and $R_j \in \mathrm{SO}(3)$ minimizes 
+\begin{equation}
+\sum_{i} \left\| R_j(\vec{\mathbf{r}}_{A,i} - \vec{\mathbf{r}}_{A})  - (\vec{\mathbf{r}}_{j,i} - \vec{\mathbf{r}}_{j})\right\|
+\end{equation}
+Following the Kabsch Algorithm, $R_j$ can be computed via the singular value decomposition 
+\begin{equation}
+    (\vec{\mathbf{r}}_{A,i} - \vec{\mathbf{r}}_{A})^T  \cdot (\vec{\mathbf{r}}_{j,i} - \vec{\mathbf{r}}_{j}) = U\Sigma V^T \\
+\end{equation}
+as 
+\begin{equation}
+R_j = V\cdot \operatorname{diag}(1, 1, d)\cdot U^T
+\end{equation}
+where $d = \det(U)\det(V)$ corrects for a potential reflection in the orthogonal matrices $U$ and $V$.
+
+With all frames $T_j$ expressed in the same coordinate system, we can compute the relative transform
+\begin{equation}
+T_{j\rightarrow j+1} = (R_{j\rightarrow j+1}, \vec{\mathbf{t}}_{j\rightarrow j+1}) = T_j^{-1}\circ T_{j+1}
+\end{equation}
+Given the symmetry of the viral coat structure, these transforms are expected to be equal. The average relative transform $T_R = (R_R, \vec{\mathbf{t}}_R)$ is computed by choosing $\vec{\mathbf{t}}_R$ as the mean over $\{\vec{\mathbf{t}}_{j\rightarrow j+1}\}$ and choosing $R_R \in \mathrm{SO}(3)$ as the rotation matrix closest to the average over all $R_{j\rightarrow j+1}$, that is $R_R=UV^T$ where $U\Sigma V^T = \frac{1}{n}\sum_j R_{j\rightarrow j+1}$ \cite{Sarabandi2023} (given the similarity of the $\{R_{j\rightarrow j+1}\}$, no reflection can arise by continuity). 
+
+The individual rotations $R_{j\rightarrow j+1}$ had standard deviation $\Delta R_R = \SI{0.004}{\radian}$ in geodesic distance, and the individual translations had standard deviation $\Delta \mathbf{t}_R = \SI{0.04}{\angstrom}$. $R_R$ closely resembles a pure rotation around the z-axis $R_Z(\theta)$, with an angle of $\theta = \SI{-0.707}{\radian}$. The deviation is $d(R_R, R_Z(\theta)) = \SI{0.005}{\radian}$. This value of $\theta$ corresponds to a left-handed helix with $8.89$ subunits per turn. The computed rise is $\mathbf{t}_z=\SI{3.87}{\angstrom}$ per subunit, resulting in a helical pitch (rise per turn) of $\SI{34.4}{\angstrom}$. These values are mostly consistent with the ones stated in \cite{Grinzato2020} (rise $\SI{3.96}{\angstrom}$, rotation of $\SI{0.707}{\radian}$, $8.9$ copies per turn, helical pitch $\SI{35.2}{\angstrom}$). However, the authors emphasize the slight difference in the helical pitch of $\SI{35.2}{\angstrom}$ compared to that of similar flexible filamentous plant viruses (PepMV, BaMV, and PapMV), for which the helical pitch ranges from $\SI{34.3}{\angstrom}$ to $\SI{34.6}{\angstrom}$. According to the calculations above, the helical pitch in the PDB entry (which the authors produced through multiple cycles of real space refinement) differs from the original helical parameters fitted to the cryo-EM data and falls into the range of the other plant viruses, thereby potentially diminishing the significance of the reported pitch deviation. 
+
+\begin{table}
+    \centering
+    \caption{\textbf{Visualization and chain indices of different monomer configurations}, generated based on the average relative transform $T_R$. The blue chain has index $0$, the coordinates for the other chains are computed as $T_R^j \circ \vec{\mathbf{r}}_{A,i}, j \in I$. The generated monomer configurations will be used to create inputs for the algorithms in the following sections. }
+    \begin{tblr}{colspec={Q[c]Q[c]Q[c,h]}}
+        \hline
+        \textbf{Type} & \textbf{Indices} & \textbf{Visualization} \\
+        \hline
+        Helical & $I=\{0, ..., 12\}$ & \includegraphics[height=2.5cm]{pvx_slices/vis_helix.png} \\
+        \hline
+        3x3 & $I=\{0, \pm 1, \pm 8, \pm 9, \pm 10 \}$ & \includegraphics[height=2.5cm]{pvx_slices/vis_3x3.png} \\
+        \hline
+        Trimer & $I=\{0, \pm 1\}$ & \includegraphics[height=1.5cm]{pvx_slices/vis_trimer.png} \\
+        \hline
+        Pentamer & $I=\{0, \pm 1, \pm 9 \}$ & \includegraphics[height=2.5cm]{pvx_slices/vis_pentamer.png} \\
+        \hline
+    \end{tblr}
+    \label{tab:01_symmetry}
+\end{table}
+
+Given the relative transform $T_R$, model coordinates can be reconstructed based on the coordinates of the monomer $A$ according to 
+
+\begin{equation}\label{eq:01_symmetry}
+\vec{\mathbf{r}}_{j,i}^{\,\text{original}} = T_0 \circ T_R^j \circ \vec{\mathbf{r}}_{A,i}
+\end{equation}
+
+Using \autoref{eq:01_symmetry}, four different configurations of monomers are generated and used throughout the following sections (\autoref{tab:01_symmetry}). A helical configuration consisting of thirteen consecutive monomers, a three-by-three neighborhood of nine monomers, a trimer consisting of three consecutive monomers, and a pentamer consisting of five monomers aranged in a cross-shape. 
+
+Despite the small standard deviation of $T_R$, the deviation of individual atom positions in the helical thirteen-monomer reconstruction compared to the data from the pdb entry reaches up to $\SI{0.8}{\angstrom}$. This is due to lever effects caused by small deviations in the rotation. The difference in structure introduces no new clashes, but slightly reduces the contacts by $\SI{2}{\percent}$, as computed with ChimeraX \cite{ChimeraX2023}.
+
+ProteinMPNN \cite{PMPNN2022} is a deep learning model for protein sequence design, capable of creating de-novo designs of proteins that fold into a desired shape or bind to specific targets. The algorithm can create sequences for monomers, heterooligomers, and homooligomers. 
+
+The sequence is designed based on a protein backbone as input, that is the position of all backbone atoms of one or multiple chains. The underlying algorithm uses a Message Passing Neural Network (MPNN), a graph-based machine learning model. Each residue in the protein is encoded as a vertex in the graph, and edges are drawn up from each residue to its 48 closest neighbors. Vertex embeddings are initialized as 0 vectors, while the initial edge embeddings are computed based on the distances between the backbone atoms of the residue pair and the difference of their residue indices. After the computation of the initial feature embeddings, ProteinMPNN follows an encoder-decoder architecture, in which the encoder updates the edge and vertex embeddings based on their neighborhood, wheras the decoder uses the embeddings computed by the encoder to predict the amino acid type for each residue. The decoder works in an autoregressive fashion by choosing a random order for decoding the individual residues, then predicting their residue type one-by-one with knowledge of all already predicted residues. Concretely, the algorithm predicts logits $\{\ell_i\}$ for each amino acid and chooses it from a softmax distribution according to
+$$P(a_i) = \frac{\exp\left( \frac{\ell_i}{\tau} \right)}{\sum_{j=1}^{20} \exp\left( \frac{\ell_j}{\tau} \right)}$$
+Here, $\tau>0$ denotes a chosen temperature constant in the softmax distribution. For $\tau\rightarrow\infty$, the distribution is almost uniform, while for $\tau\rightarrow 0$ the amino acid with the highest predicted logit is chosen. The distribution can be biased by adding to the logits before sampling. For homooligomers, the logits of identical residues in different monomers are averaged and only one amino acid is sampled from the distribution for all of them. 
+
+In this work, all sequences used in computational and experimental evaluation are generated using ProteinMPNN. The input structure is either chosen as the backbone structure of the wildtype, thereby generating alternative sequences for the structure, or a generated artificial backbone as described in \autoref{ch:rfdiffusion}. Of particular note is the choice of the input structure: The helical virus particle consists of approximately 1300 monomers \cite{Grinzato2020}, and truncation to a smaller number will lead to an incorrect neighborhood during featurization for newly exposed residues. 
+
+However, a modification to the original ProteinMPNN algorithm can circumvent this by allowing sequence prediction for a theoretical infinite extension of a symmetric homooligomer. In ProteinMPNN, feature initialization is solely dependent on the relative neighborhood of each residue, meaning that initialization is identical for all corresponding residues in a symmetric homooligomer. Further, the message-passing algorithm in the network conserves this equivariance. Therefore, a theoretical infinite extension of the homooligomer can be simulated by remapping of interchain edges to the corresponding residue in the same chain (\autoref{fig:pmpnn_graph}), thereby reducing the input to a single monomer. 
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{pmpnn_graph.png}
+\caption{\textbf{Graph Reduction procedure for symmetric homooligomers.} After the default graph initialization from ProteinMPNN, one of the monomers is chosen as the reference monomer. Edges going out from it to other monomers are remapped to the corresponding residue in itself. Afterward, vertices and edges of the non-reference monomers are discarded. Through this method, homooligomers with a theoretically infinite geometry can be modeled. }
+\label{fig:pmpnn_graph}
+\end{figure}
+
+When testing this new algorithm for different helical viruses, the Graph Reduction procedure showed no significant improvement compared to prediction based on a 2x2 neighborhood or a 3x3 neighborhood of monomers (\autoref{fig:pmpnn_comp}). For PVX and Tobacco Mosaic Virus (TMV), the three multimeric inputs (2x2 / 3x3 / infinite neighborhood) performed better than prediction based on a sole monomer, while no such improvement was observed for Pepino Mosaic Virus (PepMV) and Bamboo Mosaic Virus (BaMV) where all methods had similar sequency recovery rates. These results suggest that for the tested proteins, the incorrect neighborhood for small crops doesn't lead to an increased call of wrong amino acids in the aggregated logits. The newly developed infinite symmetry approach performs en par with 2x2 or 3x3 neighborhood prediction, but lowers the amount of required compute to that of a single monomer. However, it is to note that compute cost is generally not a concern when running ProteinMPNN due to its low complexity. 
+
+\begin{figure}
+\centering
+\includesvg[width=\textwidth]{modeling/pmpnn_comparison.svg}
+\caption{\textbf{Sequence recovery by ProteinMPNN for different input configurations.} The input was chosen as either a single monomer, a 2x2 neighborhood, a 3x3 neighborhood, or a symmetry-preserving graph reduction, modeling a theoretical infinite neighborhood. For each of the four targets Potato Virus X (PVX), Tobacco Mosaic Virus (TMV), Pepino Mosaic Virus (PepMV) and Bamboo Mosaic Virus (BaMV), each model was evaluated 50 times using random decoding orders and a sampling temperature $\tau\rightarrow 0$. The errorbars indicate the standard deviation over the repeated evaluation. }
+\label{fig:pmpnn_comp}
+\end{figure}
+
+ProteinMPNN was used to generate sequences based on the wildtype backbone structure of PVX using the introduced Graph Reduction technique to model an infinite symmetry and a sampling temperature of $\tau\rightarrow 0$, e.g. argmax sampling. Sequences were generated with varying bias $b$ towards the wildtype sequence, that is by increasing the logit of the residue that's present in the wildtype structure by $b$ before sampling the amino acid. For each of the bias values $b \in \{0, 1, 2, 2.5\}$, five sequences. The sequence identity of the generated sequences to the wildtype was about $0.54$ (bias $0$), $0.73$ (bias $1$), $0.88$ (bias $2$) and $0.94$ (bias $2.5$). The generated sequences were further analyzed as described in the \autoref{ch:alphafold} and \autoref{ch:gromacs} before selecting some for experimental evaluation. 
+
+RFdiffusion is a generative machine learning model for protein backbone design. It can be run in different modes to accomplish several tasks such as unconditional monomer generation, protein binder design, scaffolding around a fixed motif, or design of symmetric oligomers (\autoref{fig:rfdiff_trajectories}), the latter being the most relevant for this work. In practice, RFdiffusion is commonly used together with ProteinMPNN, where RFdiffusion generates a synthetic backbone structure and ProteinMPNN tries to realize this backbone with a synthetic amino acid sequence. 
+
+\begin{figure}
+\centering
+\includesvg[width=\textwidth]{modeling/rfdiffusion_traj_basic.svg}
+\caption{\textbf{RFdiffusion trajectories for unconditional generation and symmetric noise.} For unconditional generation, the RFdiffusion algorithm samples the initial positions independently from a Gaussian distribution and generates the protein without any constraints. For the generation of oligomers with a specific symmetry, RFdiffusion only samples coordinates for one monomer and initializes the other coordinates by applying the respective symmetry transform to the coordinates of that reference monomer. In each diffusion step, this is repeated to enforce the symmetry. }
+\label{fig:rfdiff_trajectories}
+\end{figure}
+
+Generation by RFdiffusion is performed through a reverse Riemannian diffusion process on the manifold $\mathrm{SE}(3)$. Compared to other diffusion-based algorithms like AlphaFold3 (\autoref{ch:alphafold}), RFdiffusion doesn't operate on the atom coordinates using standard euclidean diffusion, but diffuses the backbone transforms instead. However, it converts the transforms from and to atom coordinates in each iteration. For unconditional generation, the model starts with randomly initialized backbone coordinates and creates a based solely on a specified number of residues. For the creation of symmetric oligomers, the user specifies a set of transforms $\mathfrak{R}=\{R_k\}_{k=1}^K \in \mathrm{SO}(3)$ that define the symmetry. The final protein will satisfy $x^{(k)} = R_k x^{(1)}$, where $x^{(k)}$ denotes the coordinates of the $k$-th monomer. This is achieved by explicitly setting the coordinates as such after initialization and in each further iteration (\autoref{alg:rfdiff}). 
+
+\begin{algorithm}
+    \caption{Generation of symmetric oligomers}
+    \begin{algorithmic}[1]
+    \AlgFunctionDef{SampleSymmetric}{$M, \mathfrak{R} = \{R_k\}_{k=1}^K$}
+    \AlgComment{RFdiffusion generation of oligomer with symmetry $\mathfrak{R}$}
+    \State $x^{(T,1)} = \text{SampleReference}(M)$
+    \ForAll{$t = T, \ldots, 1$}
+        \AlgComment[1]{Symmetrize chains}
+        \State $X^{(t)} = [R_1 x^{(t,1)}, \ldots, R_K x^{(t,1)}]$
+        \State $\hat{X}^{(0)} = \text{RFdiffusion}(X^{(t)})$
+        \State $[x^{(t-1,1)}, \ldots, x^{(t-1,K)}] = \text{ReverseStep}(X^{(t)}, \hat{X}^{(0)})$
+    \EndFor
+    \State \Return $\hat{X}^{(0)}$
+    \end{algorithmic}
+    \label{alg:rfdiff}
+\end{algorithm}
+
+In the original RFdiffusion code, only point group symmetries are supported, that is symmetries that satisfy $\{x^{(1)}, ..., x^{(K)}\} = \{R_j x^{(1)}, ..., R_j x^{(K)}\}$ for each $R_j$, up to reordering of the monomers. Technically, the code could work on general euclidean transforms $T_j \in \mathrm{SE}(3)$ (such as the transforms from \autoref{ch:symmetry} specifying the symmetry of PVX) as well. However, there are certain drawbacks in doing so. The positions in early steps in the diffusion process follow a Gaussian distribution. While the rotations by point group symmetries conserve that distribution, general euclidean transforms don't. This means that the positions that are fed into the noise prediction network in the diffusion process don't follow the distribution the model is trained on. Further, the authors of RFdiffusion observed that for point group symmetries, the noise prediction model conserves the symmetry almost perfectly. Due to this, the explicit symmetrization in each iteration is generally not necessary and barely affects the trajectory, if the initial noise is symmetrized. This arises from the equivariance of the $\mathrm{SE}(3)$-transformer architecture used in RFdiffusion. Using the symmetry transforms for PVX as evaluated in \autoref{ch:symmetry}, the atom positions in early stages of the diffusion process don't follow a Gaussian distribution, and same-seeded trajectories using either full symmetry enforcement or only initially symmetrized noise differ strongly (\autoref{fig:rfdiff_sym_trajectories}). Rather, for initial symmetrization, the atoms quickly collapse to a Gaussian-like distribution, before spreading out again to form the final multimer.
+
+\begin{figure}[!hbtp]
+    \centering
+    \includesvg[width=\textwidth]{modeling/rfdiffusion_traj_symmetry.svg}
+    \caption{\textbf{RFdiffusion trajectories using the PVX symmetry with full and initial symmetry enforcement. } For initial symmetrization, only the initial Gaussian noise is symmetrized by initializing only one monomer randomly and calculating all other coordinates by applying the symmetry transforms to these reference coordinates. For full symmetrization, this step is repeated at the start of each iteration. While the atom coordinates quickly collapse to a Gaussian-like distribution for only initial symmetrization, full symmetrization forces a separation of the monomer coordinates. }
+    \label{fig:rfdiff_sym_trajectories}
+\end{figure}
+
+\FloatBarrier
+
+RFdiffusion with full symmetry enforcement of the PVX symmetry was used to generate backbone structures for further testing. In total, five different backbone structures were designed, and ProteinMPNN was used as described in \autoref{ch:pmpnn} to generate five sequences for each of them. Additionally, backbone structures were generated using partial denoising, where only a limited amount of noise was added to the wild type structure before denoising again. This was done using 5, 10, 15, and 20 noise steps in RFdiffusion. For each of these noise levels, three denoised backbones were generated using RFdiffusion, each realized by three sequences through ProteinMPNN. The de novo generated backbones typically consist of a simple structure of alpha helices and beta sheets (\autoref{fig:rfdiffusion_examples}). Possibly due to the aforementioned incongruities in running the algorithm with euclidean transforms, backbone structures generated for the PVX symmetry tended to have structural violations, in particular interchain clashes. The sequences were further evaluated using the methods described in \autoref{ch:alphafold} and \autoref{ch:gromacs}.
+
+
+\begin{figure}
+\centering
+\includesvg[width=\textwidth]{modeling/rfdiffusion_examples.svg}
+\caption{\textbf{Trimer structures of the PVX wild type CP and designs by RFdiffusion. } The wild type structure (a) was created from the PDB entry by removing all but three monomers. The designs (b) and (c) were created by RFdiffusion using full symmetry enforcement, based on the symmetry transform of PVX. }
+\label{fig:rfdiffusion_examples}
+\end{figure}
+

@@ -12,7 +12,7 @@ image_files = [
     'trimer_rf_diff_3_0.png',
     'trimer_rf_diff_5_0.png'
 ]
-labels = ['a', 'b', 'c']
+labels = ['a)', 'b)', 'c)']
 figsize = (5.91, 1.5)
 
 # Crop percentages (e.g., keep 80% width, 90% height)

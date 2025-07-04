@@ -4,14 +4,26 @@
 \addcontentsline{toc}{section}{Appendix A: Supplementary Figures}
 \begin{suppfigure}
 \includesvg[width=\textwidth]{lab/fluorescense_intensity.svg}
-\caption{\textbf{Calibration curve for eYFP measurement.}}
+\caption{\textbf{Calibration curve for the estimation of Strep-eYFP yield in the ALiCE reaction mix.} The calibration samples were created by diluting purified Strep-eYFP in PBS. The measurements for the highest two concentrations were left out when fitting the linear model, since they are far beyond the fluorescence measured in the samples. The measurement data can be found in \autoref{tab:calibration_values_eyfp}. }
 \label{fig:calibration_eyfp}
 \end{suppfigure}
 
 \begin{suppfigure}
+\includegraphics{lab/blot_capto.png}
+\caption{\textbf{Initial Coomassie Gel and Western Blot images following CaptoCore Purification.} The samples showed a precipitate, possibly resin from the chromatography column. Samples were taken from the concentrated CaptoCore flow-through for the constructs d29-A (S1), S-Tag-A (S2), S-Tag-B (S3), and PVX CP (S4). S-Tag-PVX virons were used as control (C1). The marker was NEB Color Prestained Protein Standard, Broad Range (10-250 kDa). The Western Blot using the anti-PVX antibody showed signals for S-Tag-A, PVX CP, and the control. The Western Blot based on the anti-S-Tag antibody showed signals for S-Tag-A and the control, as well as a faint signal for S-Tag-B. }
+\label{fig:blot_capto}
+\end{suppfigure}
+
+\begin{suppfigure}
 \includesvg[width=\textwidth]{lab/elisa_calibration.svg}
-\caption{\textbf{Calibration curve for ELISA using anti-PVX and anti-S-Tag antibodies}}
+\caption{\textbf{Calibration curves of the ELISA after cell-free expression. } Two assays were conducted, using both the anti-PVX antibody and the anti-S-Tag antibody. The calibration samples were created by diluting S-Tag-PVX virions in coating buffer. Only the data points of the lowest four concentrations were used in the estimation of the linear model for the anti-PVX antibody, because the data showed saturation. }
 \label{fig:elisa_calib}
+\end{suppfigure}
+
+\begin{suppfigure}
+\includegraphics{lab/em_immuno_labeling.png}
+\caption{\textbf{Examplary TEM Image of Immunogold labeling of S-Tag-PVX virions. } The image was provided by the Institute for Molecular Biotechnology. The particles were purified from plant infection, captured using an anti-PVX antibody and labeled using a mouse-anti-S-Tag antibody and a gold-conjugated goat-anti-mouse antibody. }
+\label{fig:em_immuno_labeling}
 \end{suppfigure}
 
 \section*{Appendix B: Supplementary Tables}
@@ -19,7 +31,7 @@
 
 \begin{supptable}[ht]
     \centering
-    \caption{Calibration data for eYFP standard}
+    \caption{\textbf{Calibration data for the estimation of Strep-eYFP yield in the ALiCE reaction mix.} The calibration samples were created by diluting purified Strep-eYFP in PBS. A visualization of the data and a linear model fitted against it can be found in \autoref{fig:calibration_eyfp}.}\label{tab:calibration_values_eyfp}
     \begin{tabular}{S[table-format=3.1] S[table-format=5.0(4), uncertainty-mode=separate]}
     \toprule
     {Concentration (\si{\micro\gram\per\milli\litre})} & {Fluorescence } \\
@@ -36,8 +48,8 @@
 
 \begin{supptable}[ht]
     \centering
-    \caption{Measured fluorescence and estimated eYFP concentrations for Strep-eYFP (ALiCE) and Non-template (ALiCE)}
-    \label{fig:sample_values_eyfp}
+    \caption{\textbf{Measured fluorescence and estimated eYFP concentrations for Strep-eYFP (ALiCE) and Non-template (ALiCE). } The concentration was calculated from the fluorescence using the linear model shown in \autoref{fig:calibration_eyfp}. Back-calculation of the original sample concentration was done by multiplication with the dilution factor. }
+    \label{tab:sample_values_eyfp}
     \begin{tabular}{
         l
         S[table-format=4.0(2),uncertainty-mode = separate]
@@ -67,7 +79,7 @@
 
 \begin{supptable}[ht]
     \centering
-    \caption{Calibration data for anti-PVX and anti-S-Tag ELISAs}
+    \caption{\textbf{Calibration data of the ELISA after cell-free expression. } Two assays were conducted, using both the anti-PVX antibody and the anti-S-Tag antibody. The calibration samples were created by diluting S-Tag-PVX virions in coating buffer. A visualization of the data and a linear model fitted against it can be found in \autoref{fig:elisa_calib}.}
     \label{tab:calibration_data_elisa}
     \begin{tabular}{
         S[table-format=4.0]
@@ -93,7 +105,7 @@
 
 \begin{supptable}[ht]
     \centering
-    \caption{Estimated concentrations from anti-PVX ELISA}
+    \caption{\textbf{Measured OD and estimated antigen concentrations for the ELISA using the anti-PVX antibody.} The concentration was calculated from the OD using the linear model discussed in \autoref{subsection:elisa} and multiplication with the dilution factor. }
     \label{tab:sample_values_elisa_anti_pvx}
     \begin{tabular}{
         l
@@ -114,7 +126,7 @@
     \textbf{S-Tag-B} \\
     1:500 & 0.005(0.026) & 0.4(2.0) \\
     1:1000 & 0.020(0.030) & 3.1(4.6) \\
-    \textbf{CP-PVX} \\
+    \textbf{PVX CP} \\
     1:500 & 0.871(0.028) & 66.9(2.2) \\
     1:1000 & 0.873(0.026) & 134.2(4.0) \\
     \textbf{Non-template} \\
@@ -126,7 +138,7 @@
 
 \begin{supptable}[ht]
     \centering
-    \caption{Estimated concentrations from anti-S-Tag ELISA}
+    \caption{\textbf{Measured OD and estimated antigen concentrations for the ELISA using the anti-S-Tag antibody.} The concentration was calculated from the OD using the linear model discussed in \autoref{subsection:elisa} and multiplication with the dilution factor. }
     \label{tab:sample_values_elisa_anti_s_tag}
     \begin{tabular}{
         l
@@ -147,7 +159,7 @@
     \textbf{S-Tag-B} \\
     1:500 & 1.484(0.073) & 813(40) \\
     1:1000 & 1.094(0.098) & 1198(107) \\
-    \textbf{CP-PVX} \\
+    \textbf{PVX CP} \\
     1:500 & 0.022(0.018) & 12(10) \\
     1:1000 & 0.046(0.020) & 50(22) \\
     \textbf{Non-template} \\
@@ -225,10 +237,10 @@
     %\end{tabular}
 %\end{supptable}
 
-\section*{Appendix B: Algorithms}
-\addcontentsline{toc}{section}{Appendix B: Algorithms}
+\section*{Appendix C: Algorithms}
+\addcontentsline{toc}{section}{Appendix C: Algorithms}
 \begin{suppalgorithm}
-     \caption{Sample Diffusion}
+     \caption{Sample Diffusion\\ A faithful recreation of the diffusion sampling algorithm from the AlphaFold 3 paper \cite{af3}. Diffusion in AlphaFold 3 closely follows the diffusion models described in \cite{edm_diffusion}. In particular, the noise level is increased in each denoising iteration, before the actual denoising step. }
      {\small
      \begin{algorithmic}[1]
          \AlgFunctionDef{SampleDiffusion}{$\{\mathbf{f}^*\}$, $\{\mathbf{s}_i^{\text{inputs}}\}$, $\{\mathbf{s}_i^{\text{trunk}}\}$, $\{\mathbf{z}_{ij}^{\text{trunk}}\}$, Noise Schedule $[c_0, c_1, \ldots, c_T]$, $\gamma_0 = 0.8$, $\gamma_{\min} = 1.0$, noise scale $\lambda = 1.003$, step scale $\eta = 1.5$}
@@ -247,10 +259,13 @@
          \State \textbf{return} $\{\vec{\mathbf{x}}_l\}$
          \end{algorithmic}
      }
+     \label{alg:af3_diffusion}
 \end{suppalgorithm}
 
 \begin{suppalgorithm}
-    \caption{Sample Diffusion\algHighlight{ with Symmetrization}}
+    \caption{Sample Diffusion\algHighlight{ with Symmetrization}\\
+    A variant of \autoref{alg:af3_diffusion} that enforces a predetermined symmetry in each denoising step. To do so, the algorithm keeps track of all motion applied to the model throughout the algorithm. All differences to \autoref{alg:af3_diffusion} are highlighted in yellow.
+    }
     {\small
     \begin{algorithmic}[1]
         \AlgFunctionDef{SampleDiffusion}{$\{\mathbf{f}^*\}$, $\{\mathbf{s}_i^{\text{inputs}}\}$, $\{\mathbf{s}_i^{\text{trunk}}\}$, $\{\mathbf{z}_{ij}^{\text{trunk}}\}$, Noise Schedule $[c_0, c_1, \ldots, c_T]$, $\gamma_0 = 0.8$, $\gamma_{\min} = 1.0$, noise scale $\lambda = 1.003$, step scale $\eta = 1.5$, \algHighlight{Monomer Transforms $\{T_j\}$}}
@@ -286,23 +301,23 @@
     }
     \label{alg:af3_sym}
 \end{suppalgorithm}
-\section*{Appendix C: Synthetic Sequences}\label{appendix:synthetic_seqs}
-\addcontentsline{toc}{section}{Appendix C: Synthetic Sequences}
-\subsection*{C.1: Construct A - Protein Sequence (Designed)}
+\section*{Appendix D: Synthetic Sequences}\label{appendix:synthetic_seqs}
+\addcontentsline{toc}{section}{Appendix D: Synthetic Sequences}
+\subsection*{D.1: Construct A - Protein Sequence (Designed)}
 \begin{verbatim}
 ASGLFTIPDGDFFDTVRHIVASNAVATNEDLSKIEALWKDMKVPTDTLFQAAVDLCRHCA
 DVGSSAQTEMIGTGPYSNGISFARLAAAIRQVCTLRQFCMKYAPVVWNWMLTNNSPPANW
 QARGFKPEHKFAAFDFFDGVTNPAAIMPKEGLLRPPSEAEMIAAHTAAEVKSTKARAQSN
 DFASLDAAVTRGRITGQTTAEAVVTIPPP
 \end{verbatim}
-\subsection*{C.2: Construct B - Protein Sequence (Designed)}
+\subsection*{D.2: Construct B - Protein Sequence (Designed)}
 \begin{verbatim}
 ATGLNTVPDGDYFKTVKHKVLSNRVATDAELAAIETKWLAAGVPAATLFQAALDLCFQAA
 DIGCGEDTVFVGTGPYTNGVSFQDLAAIIRQVTTLLKFCRRYAPCVWNYMLTHNLPPADW
 LARGFYPDHRYAAFDFFDGVENPAAIQPKLGLLRPPTVAERIAYHTLKTITTTTAAAAGN
 DFASLHTAVTRGRLTGQSAAERIIHIPAA
 \end{verbatim}
-\subsection*{C.3: Construct A - DNA Sequence (d29-A)}
+\subsection*{D.3: Construct A - DNA Sequence (d29-A)}
 \begin{verbatim}
 GCTTCTGGCTTATTCACCATACCTGACGGGGATTTCTTCGATACTGTAAGGCACATTGTA
 GCTAGTAATGCTGTGGCAACAAACGAGGATCTCAGCAAGATCGAGGCTTTGTGGAAAGAC
@@ -316,7 +331,7 @@ ATGATCGCAGCTCATACTGCAGCCGAGGTCAAGAGCACAAAAGCTCGAGCACAAAGCAAT
 GACTTCGCTTCCCTTGACGCAGCCGTCACACGAGGGCGAATCACCGGCCAGACTACAGCA
 GAGGCCGTTGTGACCATTCCCCCCCCT
 \end{verbatim}
-\subsection*{C.4: Construct B - DNA Sequence (d29-B)}
+\subsection*{D.4: Construct B - DNA Sequence (d29-B)}
 \begin{verbatim}
 GCCACCGGGCTGAATACCGTCCCTGACGGCGACTATTTCAAAACAGTCAAGCACAAGGTT
 TTATCCAATAGAGTAGCAACTGATGCTGAGTTGGCCGCTATTGAGACAAAATGGCTGGCT
@@ -330,7 +345,7 @@ AGGATCGCTTACCATACCCTGAAGACCATTACAACAACCACCGCAGCCGCCGCAGGTAAC
 GATTTTGCTTCACTTCATACTGCTGTAACTCGTGGTAGACTCACAGGTCAGAGCGCCGCT
 GAGAGAATCATACACATACCCGCAGCT
 \end{verbatim}
-\subsection*{C.5: Construct A - DNA Sequence with S-Tag (S-Tag-A)}
+\subsection*{D.5: Construct A - DNA Sequence with S-Tag (S-Tag-A)}
 \begin{verbatim}
 ATGAGTAAAGAAACAGCCGCCGCTAAATTCGAACGTCAGCATATGGATAGTCCTGCATCA
 ACAACCCAACCCATAGGTAGCACCACTAGCACAACTACTAAGACTGCCGGTGCAACCCCT
@@ -346,7 +361,7 @@ GCCGAGATGATCGCAGCTCATACTGCAGCCGAGGTCAAGAGCACAAAAGCTCGAGCACAA
 AGCAATGACTTCGCTTCCCTTGACGCAGCCGTCACACGAGGGCGAATCACCGGCCAGACT
 ACAGCAGAGGCCGTTGTGACCATTCCCCCCCCTTAA
 \end{verbatim}
-\subsection*{C.6: Construct B - DNA Sequence with S-Tag (S-Tag-B)}
+\subsection*{D.6: Construct B - DNA Sequence with S-Tag (S-Tag-B)}
 \begin{verbatim}
 ATGAGCAAGGAGACTGCTGCAGCCAAGTTTGAGCGTCAGCACATGGACAGCCCAGCTTCA
 ACCACTCAACCCATCGGTTCTACTACATCCACAACTACCAAGACAGCAGGGGCTACTCCA

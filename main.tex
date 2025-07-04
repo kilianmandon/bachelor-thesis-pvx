@@ -64,6 +64,8 @@
 \floatstyle{ruled}
 \restylefloat{suppalgorithm}
 
+\newcommand{\algorithmautorefname}{Algorithm}
+
 \captionsetup{labelfont=bf,tableposition=top}
 
 \graphicspath{ {images/} }
@@ -77,34 +79,59 @@
 \DeclareSIUnit\Dalton{\text {Da}}
 \DeclareSIUnit\Molar{M}
 \DeclareSIUnit\enzymeUnit{U}
+%\DeclareSIUnit\cal{cal}
 
 
 \begin{document}
 \begin{titlepage}
-    \begin{figure}[t]
-        \includesvg[width=0.3\textwidth]{images/RWTH_Logo_3.svg}
-    \end{figure}
-   \begin{center}
-        \vspace*{1cm}
-       \textbf{\huge Computational Design and Cell-Free Expression of Coat Protein Subunits for the Functional Assembly into Potato Virus X-like Particles}
-       \paragraph{}$~~$\\
-       \paragraph{}$~~$\\
-       \paragraph{}$~~$\\
-       \textbf{Thesis} \\ 
-       \textbf{in Molecular and Applied Biotechnology (B.Sc.)} \\ 
-       \textbf{at RWTH Aachen University}
-       \paragraph{}$~~$\\
-       \paragraph{}$~~$\\
-       \paragraph{}$~~$\\
-       \text{Submitted on: \today} \\
-       \text{by: Kilian Mandon} \\
-       \text{1. Appraiser: Prof. Dr. Stefan Schillberg} \\
-       \text{2. Appraiser: Jun. Prof. Dr. Anna Matuszyńska} \\
-       \paragraph{}$~~$\\
-       \text{RWTH Aachen University}
-            
-   \end{center}
-\end{titlepage}
+    \begin{center}
+         \vspace*{0.5cm}
+         
+         \textbf{\underline{Bachelor's Thesis}}
+         
+         \vspace{1.5cm}
+         
+         \large
+         Submitted in Fulfilment of the Requirements for the Degree of\\
+         Bachelor of Science (B. Sc.) in Molecular and Applied Biotechnology\\
+         RWTH Aachen University
+         
+         \vspace{1cm}
+         
+         \rule{\textwidth}{0.4pt}
+         
+         \vspace{1cm}
+         
+         \textbf{\LARGE Computational Design and Cell-Free Expression of\\
+         Coat Protein Subunits for the Functional Assembly into\\
+         Potato Virus X-like Particles}
+         
+         \vspace{1cm}
+         
+         \rule{\textwidth}{0.4pt}
+         
+         \vspace{1cm}
+         
+         Faculty of Mathematics, Computer Science and Natural Sciences\\
+         RWTH Aachen University\\
+         
+         At the Institute for Molecular Biotechnology
+         
+         \vspace{1cm}
+         
+         \begin{tabular}{ll}
+         \textbf{Submitted by} & Kilian Mandon \\
+         \textbf{Supervisor} & Dr. rer. nat. Juliane Schuphan \\
+         \textbf{First examiner} & Prof. Dr. Stefan Schillberg \\
+         \textbf{Second examiner} & Jun. Prof. Dr. Anna Matuszyńska \\
+         \end{tabular}
+         
+         \vspace{1cm}
+         
+         Aachen, \today
+         
+    \end{center}
+ \end{titlepage}
 
 \tableofcontents
 \clearpage
@@ -116,28 +143,31 @@
 % \section{Notation}\label{ch:notation}
 % \input{chapters/02_notation}
 % \FloatBarrier
-
+\clearpage
 \part{Computational Modeling}
-\section{Symmetry Analysis and Model Building}\label{ch:symmetry}
+\section{Protein Design}
+\subsection{Symmetry Analysis and Model Building}\label{ch:symmetry}
 \input{chapters/03_symmetry}
 \FloatBarrier
 
-\section{Sequence Design with ProteinMPNN}\label{ch:pmpnn}
+\subsection{Sequence Design with ProteinMPNN}\label{ch:pmpnn}
 \input{chapters/04_pmpnn}
 \FloatBarrier
 
-\section{Backbone Design with RFdiffusion}\label{ch:rfdiffusion}
+\subsection{Backbone Design with RFdiffusion}\label{ch:rfdiffusion}
 \input{chapters/05_rfdiffusion}
 \FloatBarrier
 
-\section{Evaluation with AlphaFold}\label{ch:alphafold}
+\section{Computational Validation}
+\subsection{Evaluation with AlphaFold}\label{ch:alphafold}
 \input{chapters/06_alphafold}
 \FloatBarrier
 
-\section{Evaluation with GROMACS}\label{ch:gromacs}
+\subsection{Evaluation with GROMACS}\label{ch:gromacs}
 \input{chapters/07_gromacs}
 \FloatBarrier
 
+\clearpage
 \part{Experimental Evaluation}
 \section{Materials}\label{ch:materials}
 \input{chapters/08_materials}
@@ -151,11 +181,16 @@
 \section{Discussion}\label{ch:discussion}
 \input{chapters/11_discussion}
 
-\clearpage
-\input{chapters/appendix.tex}
-
+\section{Conclusion}\label{ch:conclusion}
+\input{chapters/12_conclusion}
 
 \clearpage
 \printbibliography
+
+\clearpage
+\input{chapters/appendix.tex}
+
+\clearpage
+\input{chapters/acknowledgements.tex}
 
 \end{document}

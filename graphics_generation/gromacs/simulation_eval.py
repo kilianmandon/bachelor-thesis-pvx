@@ -153,7 +153,7 @@ def main():
     if for_powerpoint:
         names_label = ['Design A (90% Identity)', 'Design B (53% Identity)', 'Design C (92% Identity)', 'Wildtype (Predicted)', 'Wildtype (PDB)', 'Wildtype (PDB, RNA)']
     else:
-        names_label = ['Design A (90\% Identity)', 'Design B (53\% Identity)', 'Design C (92\% Identity)', 'Wildtype (Predicted)', 'Wildtype (PDB)', 'Wildtype (PDB, RNA)', 'RFdiff 1', 'RFdiff 2']
+        names_label = ['Design A (90\% Identity)', 'Design B (53\% Identity)', 'Design C (92\% Identity)', 'Wildtype (Predicted)', 'Wildtype (PDB)', 'Wildtype (PDB, RNA)']
 
     names_sel = ['true_wildtype', 'true_wildtype_rna']
     names_sel_label = ['Wildtype (PDB)', 'Wildtype (PDB, RNA)']
