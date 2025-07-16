@@ -136,7 +136,7 @@ def rmsd_plot_hard(out_dirs, names, names_label, flag=''):
     plt.close() 
 
 def main():
-    for_powerpoint = False
+    for_powerpoint = True
 
     if not for_powerpoint:
         plt.style.use(['science'])

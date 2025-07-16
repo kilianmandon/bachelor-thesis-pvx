@@ -71,7 +71,7 @@
 \graphicspath{ {images/} }
 
 \usepackage{csquotes}
-\usepackage{biblatex}
+\usepackage[sorting=none]{biblatex}
 \addbibresource{chapters/bachelor_sources.bib}
 
 
@@ -79,7 +79,7 @@
 \DeclareSIUnit\Dalton{\text {Da}}
 \DeclareSIUnit\Molar{M}
 \DeclareSIUnit\enzymeUnit{U}
-%\DeclareSIUnit\cal{cal}
+\DeclareSIUnit\cal{cal}
 
 
 \begin{document}
@@ -102,8 +102,8 @@
          
          \vspace{1cm}
          
-         \textbf{\LARGE Computational Design and Cell-Free Expression of\\
-         Coat Protein Subunits for the Functional Assembly into\\
+         \textbf{\LARGE Computational Design and Cell-Free Expression of
+         Coat Protein Subunits for the Functional Assembly into
          Potato Virus X-like Particles}
          
          \vspace{1cm}
@@ -145,6 +145,14 @@
 % \FloatBarrier
 \clearpage
 \part{Computational Modeling}
+The computational design pipeline employed in this project consists of four steps for creation and in silico assessment of the designs. The designs are created using RFdiffusion and ProteinMPNN, where RFdiffusion creates backbones for the PVX symmetry, and ProteinMPNN realizes those backbones with amino acid sequences. In addition to usage on RFdiffusion backbones, ProteinMPNN is also used to design novel sequences based on the wild type structure of the PVX CP. Analysis of the designs is conducted using AlphaFold and GROMACS. The structure prediction tool AlphaFold is used to judge designed sequences based on whether the predicted fold agrees with the structure the design was created for, while the molecular dynamics software GROMACS analyzes the structures regarding their stability and binding energy (\autoref{fig:computational_overview}). 
+
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{computational_overview.png}
+\caption{\textbf{Overview of the computational design pipeline.} The AI-based tools RFdiffusion and ProteinMPNN are used for backbone and sequence design. The structure prediction tool AlphaFold analyzes and selects designs based on their predicted fold. The molecular dynamics software GROMACS further evaluates the design's stability and binding energy. }
+\label{fig:computational_overview}
+\end{figure}
+
 \section{Protein Design}
 \subsection{Symmetry Analysis and Model Building}\label{ch:symmetry}
 \input{chapters/03_symmetry}
@@ -158,7 +166,7 @@
 \input{chapters/05_rfdiffusion}
 \FloatBarrier
 
-\section{Computational Validation}
+\section{Computational Validation}\label{ch:design_evaluation}
 \subsection{Evaluation with AlphaFold}\label{ch:alphafold}
 \input{chapters/06_alphafold}
 \FloatBarrier

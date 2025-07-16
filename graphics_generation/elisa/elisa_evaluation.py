@@ -45,8 +45,8 @@ def evaluate_elisa(filepath, omit_edge_columns=True):
 
     # Fit linear regression model (OD = a * concentration + b)
     model = LinearRegression()
-    X = calibration_conc.reshape(-1, 1)
-    y = calibration_od_blanked
+    X = calibration_conc[-3:].reshape(-1, 1)
+    y = calibration_od_blanked[-3:]
     model.fit(X, y)
 
     # Invert regression: concentration = (OD - b) / a
@@ -90,4 +90,4 @@ def evaluate_elisa(filepath, omit_edge_columns=True):
     plt.show()
 
 # Run evaluation
-evaluate_elisa('graphics_generation/elisa/tecan/elisa_anti_pvx_30_min.xlsx', omit_edge_columns=True)
+evaluate_elisa('graphics_generation/elisa/tecan/old_elisa_anti_pvx_30_min.xlsx', omit_edge_columns=True)

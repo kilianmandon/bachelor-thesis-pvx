@@ -70,6 +70,7 @@ def plot_cdf(datasets, method='kde', bins=30, ax=None, labels=None, for_powerpoi
     ax.set_ylim(bottom=0)
     if for_powerpoint:
         ax.set_xlabel('RMSD (Å)')
+        ax.set_title('Cα-RMSD Comparison of AlphaFold Variants on PVX')
     else:
         ax.set_xlabel('RMSD (\AA)')
     ax.set_ylabel('Cumulative Probability')
